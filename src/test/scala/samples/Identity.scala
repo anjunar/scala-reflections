@@ -9,6 +9,6 @@ abstract class Identity {
 
   @BeanProperty
   @NotBlank
-  private var id : String = _
+  var id : String = _
 
 }

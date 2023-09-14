@@ -9,10 +9,10 @@ class Person extends Identity {
 
   @Size(min = 3, max = 80)
   @BeanProperty
-  private var firstName: String = _
+  var firstName: String = _
 
   @Size(min = 3, max = 80)
   @BeanProperty
-  private var lastName: String = _
+  var lastName: String = _
 
 }

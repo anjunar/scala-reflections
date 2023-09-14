@@ -11,30 +11,32 @@ object Main {
   def main(args: Array[String]): Unit = {
     val start = System.currentTimeMillis()
 
+    val packages = List("com.anjunar", "scala", "samples")
+
     val classPath = ClassPath.from(ClassLoader.getSystemClassLoader())
     val allClasses = classPath
       .getAllClasses
       .asScala
-      .filter(clazz => clazz.getPackageName.startsWith("com.anjunar") || clazz.getPackageName.startsWith("scala") || clazz.getPackageName.startsWith("samples"))
+      .filter(clazz => packages.exists(p => clazz.getPackageName.startsWith(p)))
       .map(_.load())
 
-    println("\n" + (System.currentTimeMillis() - start) / 1000 + " seconds")
-
     val resolver = Reflections.init(allClasses)
+    val introSpector = new Introspector(resolver)
+    val personBean = introSpector.resolve(classOf[Person])
 
-    println("\n" + (System.currentTimeMillis() - start) / 1000 + " seconds")
+    val person = new Person()
+    person.id = "1"
+    person.firstName = "Max"
+    person.lastName = "Mustermann"
 
-/*    val classes = resolver.findExtendingClasses(classOf[Identity])
+    val property = personBean
+      .properties
+      .find(_.name == "firstName")
+      .get
 
-    classes.foreach(Utils.renderToConsole)
+    val value = property.get(person)
 
-    println("\n" + (System.currentTimeMillis() - start) / 1000 + " seconds")
-*/    
-    val introspector = new Introspector(resolver)
-
-    val person = introspector.resolve(classOf[Person])
-
-    println(person)
+    println(value)
 
   }
 
