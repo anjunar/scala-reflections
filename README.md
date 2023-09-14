@@ -1,8 +1,10 @@
+Scala Reflections
+
 "scala-reflections" is a robust and versatile reflection framework built exclusively for Scala 3, designed to empower developers with advanced metaprogramming capabilities while maintaining the principles of type-safety, expressiveness, and ease of use. This paper introduces "scala-reflections" and explores its rich set of features, emphasizing its potential to revolutionize Scala 3 development by providing seamless access to program structures, types, and values at compile-time and runtime.
 
 Key features of "scala-reflections" include:
 
-Type-Driven Metaprogramming: The framework leverages Scala 3's enhanced type system, enabling developers to perform sophisticated type-level computations, type-safe pattern matching, and type-directed code generation.
+Type-Driven Metaprogramming: The framework leverages Scala 3's enhanced type system, enabling developers to perform sophisticated type-level computations and type-safe pattern matching
 
 Runtime Reflection: A reliable runtime reflection mechanism is provided, enabling dynamic inspection and manipulation of program structures and data. Developers can utilize runtime reflection to implement dynamic behaviors and adapt to changing requirements.
 
