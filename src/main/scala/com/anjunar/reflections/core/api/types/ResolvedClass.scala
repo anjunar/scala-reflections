@@ -71,7 +71,7 @@ trait ResolvedClass extends ResolvedType with ResolvedAnnotated {
     result.toArray
   }
 
-  override lazy val annotations: Array[ResolvedAnnotation] = declaredAnnotations ++ parentsHierarchy.flatMap(_.declaredAnnotations)
+  override lazy val annotations: Array[ResolvedAnnotation] = declaredAnnotations ++ parentsHierarchy.flatMap(_.declaredAnnotations).distinct
 
   lazy val members: Array[ResolvedMember] = {
 

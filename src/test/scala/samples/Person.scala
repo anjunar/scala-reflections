@@ -1,11 +1,18 @@
 package samples
 
+import jakarta.validation.constraints.Size
+
 import scala.beans.BeanProperty
 
 
-class Person(id: String, 
-             @BeanProperty firstName: String, 
-             @BeanProperty lastName: String) extends Identity(id) {
+class Person extends Identity {
 
+  @Size(min = 3, max = 80)
+  @BeanProperty
+  private var firstName: String = _
+
+  @Size(min = 3, max = 80)
+  @BeanProperty
+  private var lastName: String = _
 
 }

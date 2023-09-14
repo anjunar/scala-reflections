@@ -19,7 +19,7 @@ trait ResolvedField extends ResolvedMember {
 
   lazy val overridden: Array[ResolvedField]
 
-  override lazy val annotations: Array[ResolvedAnnotation] = declaredAnnotations ++ overridden.flatMap(_.declaredAnnotations)
+  override lazy val annotations: Array[ResolvedAnnotation] = declaredAnnotations ++ overridden.flatMap(_.declaredAnnotations).distinct
 
   override def accept(visitor: Visitor): Unit = visitor.visit(this)
 

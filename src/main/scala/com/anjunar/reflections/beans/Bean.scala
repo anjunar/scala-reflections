@@ -12,7 +12,7 @@ class Bean(resolvedClass: ResolvedClass) {
       if (method.name.startsWith("get")) {
         val propertyName = method.name.substring(3, 4).toLowerCase + method.name.substring(4)
         val setter = resolvedClass
-          .methods("set" + propertyName)
+          .methods("set" + method.name.substring(3))
           .headOption
           .orNull
 
@@ -23,7 +23,7 @@ class Bean(resolvedClass: ResolvedClass) {
       } else {
         val propertyName = method.name.substring(2,3).toLowerCase + method.name.substring(3)
         val setter = resolvedClass
-          .methods("set" + propertyName)
+          .methods("set" + method.name.substring(2))
           .headOption
           .orNull
 

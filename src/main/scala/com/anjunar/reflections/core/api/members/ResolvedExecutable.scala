@@ -24,6 +24,7 @@ object ResolvedExecutable {
           else
             overrides.parameters(constructor.parameters.indexOf(this)).declaredAnnotations
         })
+        .distinct
       case method: ResolvedMethod => declaredAnnotations ++ method
         .overridden
         .flatMap(overrides => {
@@ -32,7 +33,7 @@ object ResolvedExecutable {
           else
             overrides.parameters(method.parameters.indexOf(this)).declaredAnnotations
         })
-
+        .distinct
     override def accept(visitor: Visitor): Unit = visitor.visit(this)
 
     override def toString = s"${annotations.mkString("")}$name : $declaredType"

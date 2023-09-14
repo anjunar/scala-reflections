@@ -31,8 +31,10 @@ object Main {
     println("\n" + (System.currentTimeMillis() - start) / 1000 + " seconds")
 */    
     val introspector = new Introspector(resolver)
-    
-    println(introspector.resolve(classOf[Person]))
+
+    val person = introspector.resolve(classOf[Person])
+
+    println(person)
 
   }
 
