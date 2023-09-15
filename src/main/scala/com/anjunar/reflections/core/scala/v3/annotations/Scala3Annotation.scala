@@ -2,6 +2,7 @@ package com.anjunar.reflections
 package core.scala.v3.annotations
 
 import com.anjunar.reflections.core.Utils
+import com.anjunar.reflections.core.java.types.JavaClass
 import core.api.Visitor
 import core.api.annotations.ResolvedAnnotation
 import core.api.nodes.ResolvedNode
@@ -24,7 +25,9 @@ class Scala3Annotation (underlying : Annotation, owner : ResolvedNode)(using con
   override val fields: Map[String, Object] = underlying
     .arguments
     .map(Utils.doIndexed((index, arg) => {
-      val lhs: String = declaredType.declaredMethods(index).name
+      val lhs: String = declaredType match
+        case clazz : JavaClass => clazz.declaredMethods(index).name
+        case _ => underlying.symbol.declarations(index).name.toString
       val rhs: Object = arg match
         case literal: Literal => literal.constant.get.asInstanceOf[Object]
         case _ => null

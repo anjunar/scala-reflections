@@ -7,6 +7,7 @@ import scala.beans.BeanProperty
 
 class Person extends Identity {
 
+  @TestAnnotation(id = "1234")
   @Size(min = 3, max = 80)
   @BeanProperty
   var firstName: String = _
