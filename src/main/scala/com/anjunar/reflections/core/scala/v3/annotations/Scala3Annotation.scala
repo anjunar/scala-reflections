@@ -1,13 +1,13 @@
 package com.anjunar.reflections
 package core.scala.v3.annotations
 
+import com.anjunar.reflections.core.Utils
 import core.api.Visitor
 import core.api.annotations.ResolvedAnnotation
 import core.api.nodes.ResolvedNode
-import core.api.types.ResolvedType
+import core.api.types.{ResolvedClass, ResolvedType}
 import core.scala.v3.nodes.Scala3Node
 import core.scala.v3.types.Scala3TypeResolver
-
 import tastyquery.Annotations.Annotation
 import tastyquery.Names.TermName
 import tastyquery.Trees.*
@@ -19,17 +19,17 @@ class Scala3Annotation (underlying : Annotation, owner : ResolvedNode)(using con
   
   override val fullName: String = underlying.symbol.fullName.toString()
   
-  override val declaredType: ResolvedType = Scala3TypeResolver.resolve[ResolvedType](underlying.symbol, this)
+  override val declaredType: ResolvedClass = Scala3TypeResolver.resolve[ResolvedClass](underlying.symbol, this)
 
   override val fields: Map[String, Object] = underlying
     .arguments
-    .map(arg => {
-      val lhs : String = underlying.symbol.declarations.apply(underlying.arguments.indexOf(arg)).name.toString
+    .map(Utils.doIndexed((index, arg) => {
+      val lhs: String = declaredType.declaredMethods(index).name
       val rhs: Object = arg match
         case literal: Literal => literal.constant.get.asInstanceOf[Object]
         case _ => null
       Tuple2(lhs, rhs)
-    })
+    }))
     .filter(arg => arg._2 != null)
     .toMap
 

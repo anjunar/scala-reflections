@@ -128,7 +128,7 @@ trait ResolvedClass extends ResolvedType with ResolvedAnnotated {
 
   lazy val declaredMethods: Array[ResolvedMethod]
 
-  def declaredMethod(name: String): Array[ResolvedMethod] = declaredMethods.filter(_.name == name)
+  def declaredMethods(name: String): Array[ResolvedMethod] = declaredMethods.filter(_.name == name)
 
   override def accept(visitor: Visitor): Unit = visitor.visit(this)
 

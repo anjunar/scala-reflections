@@ -7,12 +7,18 @@ import core.api.nodes.ResolvedNode
 import core.api.types.{ResolvedClass, ResolvedType}
 import core.java.annotations.JavaAnnotation
 import core.java.members.JavaMemberResolver
-
+import javassist.{ClassClassPath, ClassPool}
 import tastyquery.Contexts
 
 import java.lang.reflect.Modifier
 
 class JavaClass(override val underlying : Class[_], owner : ResolvedNode)(using context: Contexts.Context) extends JavaType(underlying, owner) with ResolvedClass {
+
+  private val underlyingAlternative = {
+    val default = ClassPool.getDefault
+    default.insertClassPath(new ClassClassPath(underlying));
+    default.get(underlying.getName)
+  }
 
   override val name: String = underlying.getSimpleName
 
@@ -55,20 +61,20 @@ class JavaClass(override val underlying : Class[_], owner : ResolvedNode)(using 
     .getDeclaredClasses
     .map(clazz => new JavaClass(clazz, this))
 
-  lazy val declaredFields: Array[ResolvedField] = underlying
+  lazy val declaredFields: Array[ResolvedField] = underlyingAlternative
     .getDeclaredFields
-    .map(field => JavaMemberResolver.resolve[ResolvedField](field, this))
+    .map(field => JavaMemberResolver.resolve[ResolvedField](underlying.getField(field.getName), this))
 
   lazy val declaredTypes : Array[ResolvedAbstractType] = Array()
 
-  lazy val declaredConstructors: Array[ResolvedConstructor] = underlying
+  lazy val declaredConstructors: Array[ResolvedConstructor] = underlyingAlternative
     .getDeclaredConstructors
-    .map(constructor => JavaMemberResolver.resolve[ResolvedConstructor](constructor, this))
+    .map(constructor => JavaMemberResolver.resolve[ResolvedConstructor](underlying.getConstructor(constructor.getParameterTypes.map(param => Class.forName(param.getName)) :_*), this))
 
-  lazy val declaredMethods: Array[ResolvedMethod] = underlying
+  lazy val declaredMethods: Array[ResolvedMethod] = underlyingAlternative
     .getDeclaredMethods
-    .filter(method => ! method.getName.startsWith("lambda$") && ! method.isBridge)
-    .map(method => JavaMemberResolver.resolve[ResolvedMethod](method, this))
+    .filter(method => ! method.getName.startsWith("lambda$"))
+    .map(method => JavaMemberResolver.resolve[ResolvedMethod](underlying.getMethod(method.getName, method.getParameterTypes.map(param => Class.forName(param.getName)) :_*), this))
 
   override lazy val declaredAnnotations: Array[ResolvedAnnotation] = underlying
     .getDeclaredAnnotations
