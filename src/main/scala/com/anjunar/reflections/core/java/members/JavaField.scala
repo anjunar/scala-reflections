@@ -15,7 +15,10 @@ import scala.collection.mutable.ListBuffer
 
 class JavaField(underlying : Field, owner : ResolvedNode)(using context: Contexts.Context) extends JavaMember(underlying, owner) with ResolvedField {
   
-  override def get(instance: AnyRef): Any = underlying.get(instance)
+  override def get(instance: AnyRef): Any = {
+    underlying.setAccessible(true)
+    underlying.get(instance)
+  }
 
   override def set(instance: AnyRef, arg : Any): Any = underlying.set(instance, arg)
 

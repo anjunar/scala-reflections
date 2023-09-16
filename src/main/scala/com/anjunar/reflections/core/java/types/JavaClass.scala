@@ -7,7 +7,7 @@ import core.api.nodes.ResolvedNode
 import core.api.types.{ResolvedClass, ResolvedType}
 import core.java.annotations.JavaAnnotation
 import core.java.members.JavaMemberResolver
-import javassist.{ClassClassPath, ClassPool}
+import javassist.{ClassClassPath, ClassPool, CtClass}
 import tastyquery.Contexts
 
 import java.lang.reflect.Modifier
@@ -63,18 +63,35 @@ class JavaClass(override val underlying : Class[_], owner : ResolvedNode)(using 
 
   lazy val declaredFields: Array[ResolvedField] = underlyingAlternative
     .getDeclaredFields
-    .map(field => JavaMemberResolver.resolve[ResolvedField](underlying.getField(field.getName), this))
+    .map(field => JavaMemberResolver.resolve[ResolvedField](underlying.getDeclaredField(field.getName), this))
 
   lazy val declaredAbstractTypes : Array[ResolvedAbstractType] = Array()
 
   lazy val declaredConstructors: Array[ResolvedConstructor] = underlyingAlternative
     .getDeclaredConstructors
-    .map(constructor => JavaMemberResolver.resolve[ResolvedConstructor](underlying.getConstructor(constructor.getParameterTypes.map(param => Class.forName(param.getName)) :_*), this))
+    .map(constructor => {
+      val parameters = constructor.getParameterTypes.map(param => toJavaClass(param))
+      JavaMemberResolver.resolve[ResolvedConstructor](underlying.getDeclaredConstructor(parameters: _*), this)
+    })
 
   lazy val declaredMethods: Array[ResolvedMethod] = underlyingAlternative
     .getDeclaredMethods
     .filter(method => ! method.getName.startsWith("lambda$"))
-    .map(method => JavaMemberResolver.resolve[ResolvedMethod](underlying.getMethod(method.getName, method.getParameterTypes.map(param => Class.forName(param.getName)) :_*), this))
+    .map(method => {
+      val parameters = method.getParameterTypes.map(param => toJavaClass(param))
+      JavaMemberResolver.resolve[ResolvedMethod](underlying.getDeclaredMethod(method.getName, parameters: _*), this)
+    })
+
+  private def toJavaClass(param: CtClass) = param.getName match {
+    case "short" => classOf[Short]
+    case "long" => classOf[Long]
+    case "int" => classOf[Int]
+    case "char" => classOf[Char]
+    case "float" => classOf[Float]
+    case "double" => classOf[Double]
+    case "byte" => classOf[Byte]
+    case _ => Class.forName(param.getName)
+  }
 
   override lazy val declaredAnnotations: Array[ResolvedAnnotation] = underlying
     .getDeclaredAnnotations
