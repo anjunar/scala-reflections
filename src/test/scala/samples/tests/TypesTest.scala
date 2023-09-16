@@ -1,5 +1,6 @@
 package samples.tests
 
+import com.anjunar.reflections.core.api.types.ResolvedClass
 import org.scalatest.funsuite.AnyFunSuite
 import samples.Environment.resolver.findStaticClass
 import samples.models.Person
@@ -13,7 +14,8 @@ class TypesTest extends AnyFunSuite {
       .declaredAbstractType("Name")
       .get
 
-    assert(nameType.aliasedType != null)
+    val aliasedType = nameType.aliasedType.asInstanceOf[ResolvedClass]
+    assert(aliasedType.name == "String")
   }
 
 }

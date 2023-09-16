@@ -4,7 +4,7 @@ package core.scala.v3.types
 import com.anjunar.reflections.Dispatcher
 import core.api.nodes.ResolvedNode
 import core.api.types.{ResolvedClass, ResolvedType}
-import tastyquery.Symbols.{ClassSymbol, TermOrTypeSymbol, TypeSymbolWithBounds}
+import tastyquery.Symbols.{ClassSymbol, TermOrTypeSymbol, TypeMemberSymbol, TypeSymbolWithBounds}
 import tastyquery.Types.*
 import tastyquery.{Contexts, Types}
 
@@ -12,13 +12,14 @@ object Scala3TypeResolver {
   
   
   
-  def resolve[R <: ResolvedType](types : Types.TypeMappable, owner : ResolvedNode)(using context: Contexts.Context) : R = {
+  def resolve[R <: ResolvedNode](types : Types.TypeMappable, owner : ResolvedNode)(using context: Contexts.Context) : R = {
     val result = types match {
       case andType : AndType => new Scala3AndType(andType, owner)
       case orType : OrType => new Scala3OrType(orType, owner)
       case appliedType: AppliedType => new Scala3ParameterizedType(appliedType, owner)
       case wildcardType : WildcardTypeArg => new Scala3WildcardType(wildcardType, owner)
       case typeBounds : TypeBounds => new Scala3BoundsType(typeBounds, owner)
+
       case matchType: MatchType => resolve[R](matchType.scrutinee, owner)
       case lambdaType : LambdaType => resolve[R](lambdaType.resultType, owner)
       case typeRef : TypeRef => resolve[R](typeRef.optSymbol.get, owner)
@@ -43,6 +44,7 @@ object Scala3TypeResolver {
   def resolve[R <: ResolvedNode](symbol : TermOrTypeSymbol, owner : ResolvedNode)(using context: Contexts.Context) : R = {
     val result = symbol match {
       case classSymbol : ClassSymbol => Dispatcher.finalResolve(classSymbol, owner)
+      case typeMemberSymbol: TypeMemberSymbol if typeMemberSymbol.name.toString == "String" => Scala3TypeResolver.resolve[R](typeMemberSymbol.aliasedType.dealias, owner)
       case typeSymbol: TypeSymbolWithBounds => new Scala3TypeVariableWithBounds(typeSymbol, owner)
     }
     result.asInstanceOf[R]
