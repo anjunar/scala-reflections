@@ -16,6 +16,29 @@ This paper presents an in-depth analysis of "scala-reflections," showcasing its 
 
 In conclusion, "scala-reflections" stands as a significant advancement in metaprogramming for Scala 3. It offers a comprehensive set of features that empower developers to write more expressive, safe, and efficient code. By harnessing the power of Scala 3's type system and reflection capabilities, "scala-reflections" opens new horizons for metaprogramming in the Scala ecosystem, promising to accelerate innovation and code quality across a wide range of applications.
 
+
+```scala 3
+object Environment {
+
+  val packages: List[String] = List("com.anjunar", "scala", "samples")
+
+  val classPath: ClassPath = ClassPath.from(ClassLoader.getSystemClassLoader)
+  
+  val allClasses: java.util.Set[Class[_]] = classPath
+    .getAllClasses
+    .stream()
+    .filter(clazz => packages.exists(p => clazz.getPackageName.startsWith(p)))
+    .map(_.load())
+    .collect(Collectors.toSet)
+
+  val resolver: TypeResolver = Reflections.init(allClasses)
+  
+  val introSpector: Introspector = new Introspector(resolver)
+
+
+}
+```
+
 ```scala 3
 class Person extends Identity {
 
@@ -31,17 +54,28 @@ class Person extends Identity {
 ```
 
 ```scala 3
-val packages = List("com.anjunar", "scala", "samples")
+val personClass = findStaticClass(classOf[Person])
 
-val classPath = ClassPath.from(ClassLoader.getSystemClassLoader())
-val allClasses = classPath
-  .getAllClasses
-  .asScala
-  .filter(clazz => packages.exists(p => clazz.getPackageName.startsWith(p)))
-  .map(_.load())
+val firstNameField = personClass
+  .declaredField("firstName")
+  .get
 
-val resolver = Reflections.init(allClasses)
-val introSpector = new Introspector(resolver)
+val sizeAnnotation = firstNameField
+  .declaredAnnotation(classOf[Size])
+  .get
+
+val min = sizeAnnotation
+  .fields("min")
+  .asInstanceOf[Int]
+assert(min == 3)
+
+val max = sizeAnnotation
+  .fields("max")
+  .asInstanceOf[Int]
+assert(max == 80)
+```
+
+```scala 3
 val personBean = introSpector.resolve(classOf[Person])
 
 val person = new Person()
@@ -59,4 +93,5 @@ val value = property.get(person)
 println(value) // => Max
 ```
 
-...more examples are comming...
+
+...for more examples look a the tests...
