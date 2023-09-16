@@ -23,7 +23,7 @@ class Scala3Constructor(underlying: TermSymbol, owner : ResolvedNode)(using cont
     })
     clazz.getConstructor(array: _*)
   }
-  override def invoke(args: Any*): Any = javaConstructor.newInstance(args : _*)
+  override def newInstance(args: Any*): Any = javaConstructor.newInstance(args : _*)
 
   override lazy val overridden: Array[ResolvedConstructor] = underlying
     .allOverriddenSymbols

@@ -11,7 +11,7 @@ import scala.reflect.runtime.universe.MethodSymbol
 
 class Scala2Constructor(underlying : MethodSymbol, owner : ResolvedNode)(using context: Contexts.Context) extends Scala2Executable(underlying, owner) with ResolvedConstructor{
 
-  override def invoke(args: Any*): Any = {
+  override def newInstance(args: Any*): Any = {
     val classMirror = Reflections.mirror.reflectClass(underlying.owner.asClass)
     val methodMirror = classMirror.reflectConstructor(underlying)
     methodMirror.apply(args : _*)

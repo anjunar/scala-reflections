@@ -65,7 +65,7 @@ class JavaClass(override val underlying : Class[_], owner : ResolvedNode)(using 
     .getDeclaredFields
     .map(field => JavaMemberResolver.resolve[ResolvedField](underlying.getField(field.getName), this))
 
-  lazy val declaredTypes : Array[ResolvedAbstractType] = Array()
+  lazy val declaredAbstractTypes : Array[ResolvedAbstractType] = Array()
 
   lazy val declaredConstructors: Array[ResolvedConstructor] = underlyingAlternative
     .getDeclaredConstructors

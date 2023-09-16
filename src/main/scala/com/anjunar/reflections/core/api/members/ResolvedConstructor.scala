@@ -7,7 +7,7 @@ import core.api.annotations.ResolvedAnnotation
 
 trait ResolvedConstructor extends ResolvedExecutable {
 
-  def invoke(args : Any*) : Any
+  def newInstance(args : Any*) : Any
   
   lazy val overridden : Array[ResolvedConstructor]
 

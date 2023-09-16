@@ -66,7 +66,7 @@ trait Visitor {
     val fullName = node.fullName
     if (! Visitor.nodeCache.contains(fullName)) {
       Visitor.nodeCache.add(fullName)
-      node.declaredTypes.foreach(elem => elem.accept(this))
+      node.declaredAbstractTypes.foreach(elem => elem.accept(this))
       node.declaredFields.foreach(elem => elem.accept(this))
       node.declaredMethods.foreach(elem => elem.accept(this))
       node.declaredConstructors.foreach(elem => elem.accept(this))

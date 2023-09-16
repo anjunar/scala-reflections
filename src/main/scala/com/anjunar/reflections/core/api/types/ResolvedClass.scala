@@ -99,9 +99,11 @@ trait ResolvedClass extends ResolvedType with ResolvedAnnotated {
 
   def field(name: String): Option[ResolvedField] = fields.find(_.name == name)
 
-  lazy val types: Array[ResolvedAbstractType] = members
+  lazy val abstractTypes: Array[ResolvedAbstractType] = members
     .filter(_.isInstanceOf[ResolvedAbstractType])
     .map(_.asInstanceOf[ResolvedAbstractType])
+  
+  def abstractType(name : String) : Option[ResolvedAbstractType] = abstractTypes.find(_.name == name)
 
   lazy val constructors: Array[ResolvedConstructor] = members
     .filter(_.isInstanceOf[ResolvedConstructor])
@@ -122,7 +124,9 @@ trait ResolvedClass extends ResolvedType with ResolvedAnnotated {
 
   def declaredField(name: String): Option[ResolvedField] = declaredFields.find(_.name == name)
 
-  lazy val declaredTypes: Array[ResolvedAbstractType]
+  lazy val declaredAbstractTypes: Array[ResolvedAbstractType]
+  
+  def declaredAbstractType(name : String) : Option[ResolvedAbstractType] = declaredAbstractTypes.find(_.name == name)
 
   lazy val declaredConstructors: Array[ResolvedConstructor]
 

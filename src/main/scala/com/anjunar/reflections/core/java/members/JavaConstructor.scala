@@ -15,7 +15,7 @@ import scala.collection.mutable.ListBuffer
 
 class JavaConstructor(underlying : Constructor[_], owner : ResolvedNode)(using context: Contexts.Context) extends JavaExecutable(underlying, owner) with ResolvedConstructor {
   
-  override def invoke(args: Any*): Any = underlying.newInstance(args : _*)
+  override def newInstance(args: Any*): Any = underlying.newInstance(args : _*)
 
   override lazy val overridden: Array[ResolvedConstructor] = owner match {
     case clazz : ResolvedClass => extract(clazz.superClass, underlying)

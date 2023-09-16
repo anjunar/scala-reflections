@@ -86,7 +86,7 @@ class Scala2Class(underlying: ClassSymbol, owner: ResolvedNode)(using context: C
     .map(_.asInstanceOf[ResolvedField])
 
 
-  override lazy val declaredTypes: Array[ResolvedAbstractType] = declaredMembers
+  override lazy val declaredAbstractTypes: Array[ResolvedAbstractType] = declaredMembers
     .filter(member => member.isInstanceOf[ResolvedAbstractType])
     .map(_.asInstanceOf[ResolvedAbstractType])
 
