@@ -1,5 +1,0 @@
-package samples
-
-trait Logger {
-
-}

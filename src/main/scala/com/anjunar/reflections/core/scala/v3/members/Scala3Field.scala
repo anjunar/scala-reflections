@@ -13,7 +13,9 @@ class Scala3Field(underlying: TermSymbol, owner : ResolvedNode)(using context: C
 
   private lazy val javaField = {
     val clazz = PathResolver.scala3ToJava(underlying.owner.asType)
-    clazz.getField(name)
+    val field = clazz.getDeclaredField(name)
+    field.setAccessible(true)
+    field
   }
 
   val name : String = underlying.name.toString

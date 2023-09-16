@@ -1,5 +1,0 @@
-package samples
-
-class Test {
-
-}
