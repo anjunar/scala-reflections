@@ -90,7 +90,7 @@ trait ResolvedClass extends ResolvedType with ResolvedAnnotated {
         case method: ResolvedMethod => method.overridden
       })
 
-    resolvedMembers.filter(member => !overridden.contains(member))
+    resolvedMembers.filter(member => !overridden.contains(member) && member.modifier == ResolvedMember.Modifier.Public)
   }
 
   lazy val fields: Array[ResolvedField] = members
