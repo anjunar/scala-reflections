@@ -15,6 +15,8 @@ import scala.collection.mutable.ListBuffer
 class JavaMethod(underlying : Method, owner : ResolvedNode)(using context: Contexts.Context) extends JavaExecutable(underlying, owner) with ResolvedMethod {
   
   override def invoke(instance: AnyRef, args: Any*): Any = underlying.invoke(instance, args :_*)
+  
+  override def invokeStatic(args: Any*): Any = invoke(null, args : _*)
 
   override lazy val overridden: Array[ResolvedMethod] = owner match {
     case clazz: ResolvedClass => extract(clazz.superClass, underlying)

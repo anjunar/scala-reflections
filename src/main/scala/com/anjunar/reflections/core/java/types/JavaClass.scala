@@ -29,7 +29,9 @@ class JavaClass(override val underlying : Class[_], owner : ResolvedNode)(using 
   override val isTrait: Boolean = underlying.isInterface
 
   override val isEnum: Boolean = underlying.isEnum
-
+  
+  override val isModule: Boolean = false
+  
   override lazy val isAnnotation: Boolean = underlying.isAnnotation
 
   override val modifier: ResolvedClass.Modifier =

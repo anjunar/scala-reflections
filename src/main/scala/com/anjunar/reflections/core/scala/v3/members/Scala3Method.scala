@@ -23,7 +23,8 @@ class Scala3Method(underlying: TermSymbol, owner : ResolvedNode)(using context: 
     })
     clazz.getMethod(name, array: _*)
   }
-  override def invoke(instance: AnyRef, args: Any*): Any = javaMethod.invoke(instance, args : _*) 
+  override def invoke(instance: AnyRef, args: Any*): Any = javaMethod.invoke(instance, args : _*)
+  override def invokeStatic(args: Any*): Any = invoke(null, args : _*)
 
   override lazy val overridden: Array[ResolvedMethod] = underlying
     .allOverriddenSymbols

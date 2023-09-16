@@ -28,8 +28,10 @@ trait ResolvedClass extends ResolvedType with ResolvedAnnotated {
   val isTrait: Boolean
 
   val isEnum: Boolean
+  
+  val isModule : Boolean
 
-  val isClass: Boolean = !isEnum && !isArray
+  val isClass: Boolean = !isEnum && !isArray && !isModule
 
   lazy val isAnnotation: Boolean
 
@@ -67,7 +69,7 @@ trait ResolvedClass extends ResolvedType with ResolvedAnnotated {
     recursion(superClass)
     parents.foreach(recursion)
 
-    result.toArray
+    result.distinct.toArray
   }
 
   override lazy val annotations: Array[ResolvedAnnotation] = declaredAnnotations ++ parentsHierarchy.flatMap(_.declaredAnnotations).distinct

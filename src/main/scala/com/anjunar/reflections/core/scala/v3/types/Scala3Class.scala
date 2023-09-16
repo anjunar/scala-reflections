@@ -24,7 +24,9 @@ class Scala3Class(underlying: ClassSymbol, owner: ResolvedNode)(using context: C
   override val isTrait: Boolean = underlying.isTrait
 
   override val isEnum: Boolean = underlying.isEnum
-
+  
+  override val isModule: Boolean = underlying.isModuleClass
+  
   override lazy val isAnnotation: Boolean = superClass match {
     case clazz: ResolvedClass => clazz.fullName == "scala.annotation.Annotation" || clazz.fullName == "scala.annotation.StaticAnnotation"
     case _ => false
