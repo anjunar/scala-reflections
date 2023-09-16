@@ -4,7 +4,7 @@ package core.scala.v3.members
 import com.anjunar.reflections.PathResolver
 import com.anjunar.reflections.core.api.members.ResolvedField
 import com.anjunar.reflections.core.api.nodes.ResolvedNode
-import com.anjunar.reflections.core.api.types.ResolvedType
+import com.anjunar.reflections.core.api.types.{ResolvedClass, ResolvedType}
 import com.anjunar.reflections.core.scala.v3.types.Scala3TypeResolver
 import tastyquery.Contexts
 import tastyquery.Symbols.TermSymbol
@@ -12,7 +12,7 @@ import tastyquery.Symbols.TermSymbol
 class Scala3Field(underlying: TermSymbol, owner : ResolvedNode)(using context: Contexts.Context) extends Scala3Member(underlying, owner) with ResolvedField {
 
   private lazy val javaField = {
-    val clazz = PathResolver.scala3ToJava(underlying.owner.asType)
+    val clazz = PathResolver.scala3ToJava(underlying.owner.asType, owner.asInstanceOf[ResolvedClass].isModule)
     val field = clazz.getDeclaredField(name)
     field.setAccessible(true)
     field

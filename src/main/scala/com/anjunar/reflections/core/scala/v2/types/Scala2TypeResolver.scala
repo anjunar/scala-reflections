@@ -34,7 +34,7 @@ object Scala2TypeResolver {
           if (fullName.contains("<") && fullName.contains(">")) {
             new Scala2Class(classSymbol, owner)
           } else {
-            Dispatcher.finalResolve(PathResolver.scala2ToScala3(classSymbol), owner)         
+            Dispatcher.finalResolve(PathResolver.scala2ToScala3(classSymbol, classSymbol.isModule), owner)         
           }
         }
     case typeSymbol: TypeSymbol =>

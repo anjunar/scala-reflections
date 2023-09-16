@@ -17,10 +17,10 @@ object Dispatcher {
 
   def finalResolve(symbol: ClassSymbol, owner: ResolvedNode)(using context: Contexts.Context): ResolvedType = symbol.sourceLanguage match {
     case SourceLanguage.Java =>
-      val classSymbol = PathResolver.scala3ToJava(symbol)
+      val classSymbol = PathResolver.scala3ToJava(symbol, symbol.isModuleClass)
       new JavaClass(classSymbol, owner)
     case SourceLanguage.Scala2 =>
-      val classSymbol = PathResolver.scala3ToScala2(symbol)
+      val classSymbol = PathResolver.scala3ToScala2(symbol, symbol.isModuleClass)
       classSymbol match
         case classSymbol: universe.ClassSymbol => new Scala2Class(classSymbol, owner)
         case typeSymbol: universe.TypeSymbol => {
@@ -34,8 +34,8 @@ object Dispatcher {
   }
 
   def resolve[T <: ResolvedNode](symbol: TypeSymbol, owner: ResolvedNode)(using context: Contexts.Context): T = symbol.sourceLanguage match {
-    case SourceLanguage.Java => JavaTypeResolver.resolve[T](PathResolver.scala3ToJava(symbol), owner)
-    case SourceLanguage.Scala2 => Scala2TypeResolver.resolve[T](PathResolver.scala3ToScala2(symbol), owner)
+    case SourceLanguage.Java => JavaTypeResolver.resolve[T](PathResolver.scala3ToJava(symbol, false), owner)
+    case SourceLanguage.Scala2 => Scala2TypeResolver.resolve[T](PathResolver.scala3ToScala2(symbol, false), owner)
     case SourceLanguage.Scala3 => Scala3TypeResolver.resolve[T](symbol, owner)
   }
 
