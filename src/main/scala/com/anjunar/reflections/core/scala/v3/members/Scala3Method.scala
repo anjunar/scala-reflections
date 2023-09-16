@@ -2,9 +2,9 @@ package com.anjunar.reflections
 package core.scala.v3.members
 
 import com.anjunar.reflections.PathResolver
-import core.api.members.ResolvedMethod
-import core.api.nodes.ResolvedNode
-import core.api.types.{ResolvedClass, ResolvedParameterizedType, ResolvedType}
+import com.anjunar.reflections.core.api.members.ResolvedMethod
+import com.anjunar.reflections.core.api.nodes.ResolvedNode
+import com.anjunar.reflections.core.api.types.{ResolvedClass, ResolvedParameterizedType, ResolvedType}
 import tastyquery.Contexts
 import tastyquery.Symbols.TermSymbol
 

@@ -1,9 +1,8 @@
 package com.anjunar.reflections
 package core.java.types
 
-import core.api.nodes.ResolvedNode
-import core.api.types.{ResolvedParameterizedType, ResolvedType, ResolvedWildcardType}
-
+import com.anjunar.reflections.core.api.nodes.ResolvedNode
+import com.anjunar.reflections.core.api.types.{ResolvedParameterizedType, ResolvedType, ResolvedWildcardType}
 import tastyquery.Contexts
 
 import java.lang.reflect.{ParameterizedType, WildcardType}

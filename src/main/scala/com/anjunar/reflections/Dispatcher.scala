@@ -1,6 +1,5 @@
 package com.anjunar.reflections
 
-import com.anjunar.reflections.PathResolver
 import com.anjunar.reflections.core.api.nodes.ResolvedNode
 import com.anjunar.reflections.core.api.types.ResolvedType
 import com.anjunar.reflections.core.java.types.{JavaClass, JavaTypeResolver}

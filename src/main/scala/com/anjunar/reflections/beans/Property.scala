@@ -1,8 +1,8 @@
 package com.anjunar.reflections
 package beans
 
-import core.api.annotations.ResolvedAnnotation
-import core.api.members.{ResolvedField, ResolvedMethod}
+import com.anjunar.reflections.core.api.annotations.ResolvedAnnotation
+import com.anjunar.reflections.core.api.members.{ResolvedField, ResolvedMethod}
 
 class Property(val name : String, getter : ResolvedMethod, setter : ResolvedMethod, field : ResolvedField) {
 

@@ -1,9 +1,8 @@
 package com.anjunar.reflections
 package core.scala.v3.types
 
-import core.api.nodes.ResolvedNode
-import core.api.types.{ResolvedType, ResolvedWildcardType}
-
+import com.anjunar.reflections.core.api.nodes.ResolvedNode
+import com.anjunar.reflections.core.api.types.{ResolvedType, ResolvedWildcardType}
 import tastyquery.Contexts
 import tastyquery.Types.WildcardTypeArg
 

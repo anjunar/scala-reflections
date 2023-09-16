@@ -1,11 +1,10 @@
 package com.anjunar.reflections
 package core.java.types
 
-import core.api.annotations.ResolvedAnnotation
-import core.api.nodes.ResolvedNode
-import core.api.types.{ResolvedBoundsType, ResolvedTypeVariableWithBounds}
-import core.java.annotations.JavaAnnotation
-
+import com.anjunar.reflections.core.api.annotations.ResolvedAnnotation
+import com.anjunar.reflections.core.api.nodes.ResolvedNode
+import com.anjunar.reflections.core.api.types.{ResolvedBoundsType, ResolvedTypeVariableWithBounds}
+import com.anjunar.reflections.core.java.annotations.JavaAnnotation
 import tastyquery.Contexts
 
 import java.lang.reflect.TypeVariable

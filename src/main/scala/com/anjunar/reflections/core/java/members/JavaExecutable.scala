@@ -1,14 +1,13 @@
 package com.anjunar.reflections
 package core.java.members
 
-import core.api.annotations.ResolvedAnnotation
-import core.api.members.ResolvedExecutable
-import core.api.nodes.ResolvedNode
-import core.api.types.ResolvedType
-import core.java.annotations.JavaAnnotation
-import core.java.nodes.JavaNode
-import core.java.types.JavaTypeResolver
-
+import com.anjunar.reflections.core.api.annotations.ResolvedAnnotation
+import com.anjunar.reflections.core.api.members.ResolvedExecutable
+import com.anjunar.reflections.core.api.nodes.ResolvedNode
+import com.anjunar.reflections.core.api.types.ResolvedType
+import com.anjunar.reflections.core.java.annotations.JavaAnnotation
+import com.anjunar.reflections.core.java.nodes.JavaNode
+import com.anjunar.reflections.core.java.types.JavaTypeResolver
 import tastyquery.Contexts
 
 import java.lang.reflect.{Executable, Parameter}

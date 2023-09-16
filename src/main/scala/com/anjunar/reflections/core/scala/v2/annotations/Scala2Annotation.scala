@@ -1,13 +1,12 @@
 package com.anjunar.reflections
 package core.scala.v2.annotations
 
-import core.api.Visitor
-import core.api.annotations.ResolvedAnnotation
-import core.api.nodes.ResolvedNode
-import core.api.types.ResolvedType
-import core.scala.v2.nodes.Scala2Node
-import core.scala.v2.types.Scala2TypeResolver
-
+import com.anjunar.reflections.core.api.Visitor
+import com.anjunar.reflections.core.api.annotations.ResolvedAnnotation
+import com.anjunar.reflections.core.api.nodes.ResolvedNode
+import com.anjunar.reflections.core.api.types.ResolvedType
+import com.anjunar.reflections.core.scala.v2.nodes.Scala2Node
+import com.anjunar.reflections.core.scala.v2.types.Scala2TypeResolver
 import tastyquery.Contexts
 
 import java.lang

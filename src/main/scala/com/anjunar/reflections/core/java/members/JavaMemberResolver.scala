@@ -1,9 +1,8 @@
 package com.anjunar.reflections
 package core.java.members
 
-import core.api.members.ResolvedMember
-import core.api.nodes.ResolvedNode
-
+import com.anjunar.reflections.core.api.members.ResolvedMember
+import com.anjunar.reflections.core.api.nodes.ResolvedNode
 import tastyquery.Contexts
 
 import java.lang.reflect.{Constructor, Field, Member, Method}

@@ -2,9 +2,9 @@ package com.anjunar.reflections
 package core.scala.v2.members
 
 import com.anjunar.reflections.Reflections
-import core.api.members.ResolvedConstructor
-import core.api.nodes.ResolvedNode
-import core.api.types.ResolvedClass
+import com.anjunar.reflections.core.api.members.ResolvedConstructor
+import com.anjunar.reflections.core.api.nodes.ResolvedNode
+import com.anjunar.reflections.core.api.types.ResolvedClass
 import tastyquery.Contexts
 
 import scala.reflect.runtime.universe.MethodSymbol

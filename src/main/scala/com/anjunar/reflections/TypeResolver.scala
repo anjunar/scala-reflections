@@ -1,6 +1,5 @@
 package com.anjunar.reflections
 
-import com.anjunar.reflections.core.api.types.ResolvedClass
 import com.anjunar.reflections.Dispatcher
 import com.anjunar.reflections.core.api.types.ResolvedClass
 import tastyquery.Classpaths.Classpath

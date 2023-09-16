@@ -1,8 +1,8 @@
 package com.anjunar.reflections
 package core.api.annotations
 
-import core.api.nodes.ResolvedNode
-import core.api.types.ResolvedType
+import com.anjunar.reflections.core.api.nodes.ResolvedNode
+import com.anjunar.reflections.core.api.types.ResolvedType
 
 trait ResolvedAnnotation extends ResolvedNode {
 

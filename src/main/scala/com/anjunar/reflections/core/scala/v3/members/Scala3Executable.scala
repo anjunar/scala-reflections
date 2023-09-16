@@ -1,15 +1,14 @@
 package com.anjunar.reflections
 package core.scala.v3.members
 
-import core.api.annotations.ResolvedAnnotation
-import core.api.members.ResolvedExecutable
-import core.api.members.ResolvedExecutable.ResolvedParameter
-import core.api.nodes.ResolvedNode
-import core.api.types.ResolvedType
-import core.scala.v3.annotations.Scala3Annotation
-import core.scala.v3.nodes.Scala3Node
-import core.scala.v3.types.Scala3TypeResolver
-
+import com.anjunar.reflections.core.api.annotations.ResolvedAnnotation
+import com.anjunar.reflections.core.api.members.ResolvedExecutable
+import com.anjunar.reflections.core.api.members.ResolvedExecutable.ResolvedParameter
+import com.anjunar.reflections.core.api.nodes.ResolvedNode
+import com.anjunar.reflections.core.api.types.ResolvedType
+import com.anjunar.reflections.core.scala.v3.annotations.Scala3Annotation
+import com.anjunar.reflections.core.scala.v3.nodes.Scala3Node
+import com.anjunar.reflections.core.scala.v3.types.Scala3TypeResolver
 import tastyquery.Contexts
 import tastyquery.Symbols.TermSymbol
 import tastyquery.Trees.DefDef

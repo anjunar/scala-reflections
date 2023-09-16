@@ -1,13 +1,12 @@
 package com.anjunar.reflections
 package core.java.members
 
-import core.api.annotations.ResolvedAnnotation
-import core.api.members
-import core.api.members.ResolvedMember
-import core.api.nodes.ResolvedNode
-import core.api.types.ResolvedClass
-import core.java.nodes.JavaNode
-
+import com.anjunar.reflections.core.api.annotations.ResolvedAnnotation
+import com.anjunar.reflections.core.api.members
+import com.anjunar.reflections.core.api.members.ResolvedMember
+import com.anjunar.reflections.core.api.nodes.ResolvedNode
+import com.anjunar.reflections.core.api.types.ResolvedClass
+import com.anjunar.reflections.core.java.nodes.JavaNode
 import tastyquery.Contexts
 
 import java.lang.reflect.{Member, Modifier}

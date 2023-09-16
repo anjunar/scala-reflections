@@ -1,9 +1,8 @@
 package com.anjunar.reflections
 package core.java.types
 
-import core.api.nodes.ResolvedNode
-import core.api.types.{ResolvedBoundsType, ResolvedType}
-
+import com.anjunar.reflections.core.api.nodes.ResolvedNode
+import com.anjunar.reflections.core.api.types.{ResolvedBoundsType, ResolvedType}
 import tastyquery.Contexts
 
 import java.lang.reflect.TypeVariable

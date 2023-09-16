@@ -1,11 +1,11 @@
 package com.anjunar.reflections
 package core.api.members
 
-import core.api.Visitor
-import core.api.annotations.{ResolvedAnnotated, ResolvedAnnotation}
-import core.api.members.ResolvedExecutable.ResolvedParameter
-import core.api.nodes.ResolvedNode
-import core.api.types.ResolvedType
+import com.anjunar.reflections.core.api.Visitor
+import com.anjunar.reflections.core.api.annotations.{ResolvedAnnotated, ResolvedAnnotation}
+import com.anjunar.reflections.core.api.members.ResolvedExecutable.ResolvedParameter
+import com.anjunar.reflections.core.api.nodes.ResolvedNode
+import com.anjunar.reflections.core.api.types.ResolvedType
 
 object ResolvedExecutable {
 

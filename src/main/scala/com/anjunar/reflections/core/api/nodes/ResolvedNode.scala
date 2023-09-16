@@ -1,7 +1,7 @@
 package com.anjunar.reflections
 package core.api.nodes
 
-import core.api.Visitor
+import com.anjunar.reflections.core.api.Visitor
 
 trait ResolvedNode(val owner : ResolvedNode) {
 

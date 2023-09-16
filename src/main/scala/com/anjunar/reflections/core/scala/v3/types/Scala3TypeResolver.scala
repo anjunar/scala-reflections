@@ -2,8 +2,7 @@ package com.anjunar.reflections
 package core.scala.v3.types
 
 import com.anjunar.reflections.Dispatcher
-import core.api.nodes.ResolvedNode
-import core.api.types.{ResolvedClass, ResolvedType}
+import com.anjunar.reflections.core.api.nodes.ResolvedNode
 import tastyquery.Symbols.{ClassSymbol, TermOrTypeSymbol, TypeMemberSymbol, TypeSymbolWithBounds}
 import tastyquery.Types.*
 import tastyquery.{Contexts, Types}

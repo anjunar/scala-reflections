@@ -1,8 +1,8 @@
 package com.anjunar.reflections
 package core.api.members
 
-import core.api.annotations.{ResolvedAnnotated, ResolvedAnnotation}
-import core.api.nodes.ResolvedNode
+import com.anjunar.reflections.core.api.annotations.{ResolvedAnnotated, ResolvedAnnotation}
+import com.anjunar.reflections.core.api.nodes.ResolvedNode
 
 object ResolvedMember {
   

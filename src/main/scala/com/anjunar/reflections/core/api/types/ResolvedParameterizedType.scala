@@ -1,8 +1,8 @@
 package com.anjunar.reflections
 package core.api.types
 
-import core.Utils
-import core.api.Visitor
+import com.anjunar.reflections.core.Utils
+import com.anjunar.reflections.core.api.Visitor
 
 trait ResolvedParameterizedType extends ResolvedType {
 

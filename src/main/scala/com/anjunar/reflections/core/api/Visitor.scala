@@ -1,11 +1,11 @@
 package com.anjunar.reflections
 package core.api
 
-import core.api.annotations.ResolvedAnnotation
-import core.api.members.*
-import core.api.members.ResolvedExecutable.ResolvedParameter
-import core.api.nodes.ResolvedNode
-import core.api.types.*
+import com.anjunar.reflections.core.api.annotations.ResolvedAnnotation
+import com.anjunar.reflections.core.api.members.*
+import com.anjunar.reflections.core.api.members.ResolvedExecutable.ResolvedParameter
+import com.anjunar.reflections.core.api.nodes.ResolvedNode
+import com.anjunar.reflections.core.api.types.*
 
 import java.util
 import scala.collection.mutable

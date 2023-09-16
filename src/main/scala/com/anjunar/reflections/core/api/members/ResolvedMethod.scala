@@ -1,10 +1,10 @@
 package com.anjunar.reflections
 package core.api.members
 
-import core.Utils
-import core.api.Visitor
-import core.api.annotations.ResolvedAnnotation
-import core.api.types.ResolvedType
+import com.anjunar.reflections.core.Utils
+import com.anjunar.reflections.core.api.Visitor
+import com.anjunar.reflections.core.api.annotations.ResolvedAnnotation
+import com.anjunar.reflections.core.api.types.ResolvedType
 
 trait ResolvedMethod extends ResolvedExecutable {
 

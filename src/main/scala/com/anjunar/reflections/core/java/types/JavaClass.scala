@@ -1,12 +1,12 @@
 package com.anjunar.reflections
 package core.java.types
 
-import core.api.annotations.ResolvedAnnotation
-import core.api.members.*
-import core.api.nodes.ResolvedNode
-import core.api.types.{ResolvedClass, ResolvedType}
-import core.java.annotations.JavaAnnotation
-import core.java.members.JavaMemberResolver
+import com.anjunar.reflections.core.api.annotations.ResolvedAnnotation
+import com.anjunar.reflections.core.api.members.*
+import com.anjunar.reflections.core.api.nodes.ResolvedNode
+import com.anjunar.reflections.core.api.types.{ResolvedClass, ResolvedType}
+import com.anjunar.reflections.core.java.annotations.JavaAnnotation
+import com.anjunar.reflections.core.java.members.JavaMemberResolver
 import javassist.{ClassClassPath, ClassPool, CtClass}
 import tastyquery.Contexts
 

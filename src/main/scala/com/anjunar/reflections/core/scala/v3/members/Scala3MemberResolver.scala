@@ -1,10 +1,9 @@
 package com.anjunar.reflections
 package core.scala.v3.members
 
-import core.api.members.ResolvedMember
-import core.api.nodes.ResolvedNode
-import core.scala.v3.types.Scala3Class
-
+import com.anjunar.reflections.core.api.members.ResolvedMember
+import com.anjunar.reflections.core.api.nodes.ResolvedNode
+import com.anjunar.reflections.core.scala.v3.types.Scala3Class
 import tastyquery.Contexts
 import tastyquery.Modifiers.TermSymbolKind
 import tastyquery.Modifiers.TermSymbolKind.*

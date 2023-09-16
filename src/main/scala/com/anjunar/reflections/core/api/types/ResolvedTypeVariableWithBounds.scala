@@ -1,8 +1,8 @@
 package com.anjunar.reflections
 package core.api.types
 
-import core.api.Visitor
-import core.api.annotations.{ResolvedAnnotated, ResolvedAnnotation}
+import com.anjunar.reflections.core.api.Visitor
+import com.anjunar.reflections.core.api.annotations.{ResolvedAnnotated, ResolvedAnnotation}
 
 trait ResolvedTypeVariableWithBounds extends ResolvedTypeVariable with ResolvedAnnotated {
 

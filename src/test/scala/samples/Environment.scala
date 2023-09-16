@@ -3,6 +3,7 @@ package samples
 import com.anjunar.reflections.beans.Introspector
 import com.anjunar.reflections.{Reflections, TypeResolver}
 import com.google.common.reflect.ClassPath
+
 import java.util.stream.Collectors
 
 object Environment {

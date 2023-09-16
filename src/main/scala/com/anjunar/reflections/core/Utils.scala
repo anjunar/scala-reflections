@@ -1,11 +1,10 @@
 package com.anjunar.reflections
 package core
 
-import core.api.types.{ResolvedClass, ResolvedType}
-import core.java.types.JavaClass
-import core.scala.v2.types.Scala2Class
-import core.scala.v3.types.Scala3Class
-
+import com.anjunar.reflections.core.api.types.{ResolvedClass, ResolvedType}
+import com.anjunar.reflections.core.java.types.JavaClass
+import com.anjunar.reflections.core.scala.v2.types.Scala2Class
+import com.anjunar.reflections.core.scala.v3.types.Scala3Class
 import tastyquery.Exceptions.{InvalidProgramStructureException, MemberNotFoundException}
 import tastyquery.Names.{nme, termName, typeName}
 import tastyquery.Symbols.{ClassSymbol, DeclaringSymbol, PackageSymbol, TermSymbol}

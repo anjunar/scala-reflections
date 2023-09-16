@@ -1,13 +1,12 @@
 package com.anjunar.reflections
 package core.java.members
 
-import core.api.annotations.ResolvedAnnotation
-import core.api.members.ResolvedConstructor
-import core.api.nodes.ResolvedNode
-import core.api.types.{ResolvedClass, ResolvedParameterizedType}
-import core.java.annotations.JavaAnnotation
-import core.java.types.JavaClass
-
+import com.anjunar.reflections.core.api.annotations.ResolvedAnnotation
+import com.anjunar.reflections.core.api.members.ResolvedConstructor
+import com.anjunar.reflections.core.api.nodes.ResolvedNode
+import com.anjunar.reflections.core.api.types.{ResolvedClass, ResolvedParameterizedType}
+import com.anjunar.reflections.core.java.annotations.JavaAnnotation
+import com.anjunar.reflections.core.java.types.JavaClass
 import tastyquery.Contexts
 
 import java.lang.reflect.Constructor

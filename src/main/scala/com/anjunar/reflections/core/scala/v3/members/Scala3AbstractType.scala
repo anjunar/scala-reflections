@@ -1,11 +1,10 @@
 package com.anjunar.reflections
 package core.scala.v3.members
 
-import core.api.members.ResolvedAbstractType
-import core.api.nodes.ResolvedNode
-import core.api.types.ResolvedType
-import core.scala.v3.types.Scala3TypeResolver
-
+import com.anjunar.reflections.core.api.members.ResolvedAbstractType
+import com.anjunar.reflections.core.api.nodes.ResolvedNode
+import com.anjunar.reflections.core.api.types.ResolvedType
+import com.anjunar.reflections.core.scala.v3.types.Scala3TypeResolver
 import tastyquery.Contexts
 import tastyquery.Symbols.{TermSymbol, TypeMemberSymbol}
 

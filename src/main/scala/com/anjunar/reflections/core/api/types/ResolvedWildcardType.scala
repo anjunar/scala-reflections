@@ -1,9 +1,9 @@
 package com.anjunar.reflections
 package core.api.types
 
-import core.Utils
-import core.api.Visitor
-import core.scala.v3.types.Scala3TypeResolver
+import com.anjunar.reflections.core.Utils
+import com.anjunar.reflections.core.api.Visitor
+import com.anjunar.reflections.core.scala.v3.types.Scala3TypeResolver
 
 trait ResolvedWildcardType extends ResolvedType {
 

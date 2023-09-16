@@ -1,9 +1,9 @@
 package com.anjunar.reflections
 package core.scala.v2.types
 
+import com.anjunar.reflections.core.api.nodes.ResolvedNode
+import com.anjunar.reflections.core.api.types.ResolvedType
 import com.anjunar.reflections.{Dispatcher, PathResolver}
-import core.api.nodes.ResolvedNode
-import core.api.types.ResolvedType
 import tastyquery.Contexts
 
 import scala.reflect.runtime.universe.{AppliedTypeTree, ClassSymbol, PolyType, RefinedType, Symbol, Type, TypeBounds, TypeRef, TypeSymbol}

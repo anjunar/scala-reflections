@@ -1,13 +1,12 @@
 package com.anjunar.reflections
 package core.java.annotations
 
-import core.api.Visitor
-import core.api.annotations.ResolvedAnnotation
-import core.api.nodes.ResolvedNode
-import core.api.types.ResolvedType
-import core.java.nodes.JavaNode
-import core.java.types.JavaTypeResolver
-
+import com.anjunar.reflections.core.api.Visitor
+import com.anjunar.reflections.core.api.annotations.ResolvedAnnotation
+import com.anjunar.reflections.core.api.nodes.ResolvedNode
+import com.anjunar.reflections.core.api.types.ResolvedType
+import com.anjunar.reflections.core.java.nodes.JavaNode
+import com.anjunar.reflections.core.java.types.JavaTypeResolver
 import tastyquery.Contexts
 
 import java.lang.annotation.Annotation

@@ -1,7 +1,7 @@
 package com.anjunar.reflections
 package beans
 
-import core.api.types.ResolvedClass
+import com.anjunar.reflections.core.api.types.ResolvedClass
 
 class Bean(resolvedClass: ResolvedClass) {
 

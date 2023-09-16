@@ -1,14 +1,13 @@
 package com.anjunar.reflections
 package core.scala.v2.types
 
-import core.api.annotations.ResolvedAnnotation
-import core.api.members.*
-import core.api.nodes.ResolvedNode
-import core.api.types.ResolvedClass.Modifier.Public
-import core.api.types.{ResolvedClass, ResolvedType}
-import core.scala.v2.annotations.Scala2Annotation
-import core.scala.v2.members.Scala2MemberResolver
-
+import com.anjunar.reflections.core.api.annotations.ResolvedAnnotation
+import com.anjunar.reflections.core.api.members.*
+import com.anjunar.reflections.core.api.nodes.ResolvedNode
+import com.anjunar.reflections.core.api.types.ResolvedClass.Modifier.Public
+import com.anjunar.reflections.core.api.types.{ResolvedClass, ResolvedType}
+import com.anjunar.reflections.core.scala.v2.annotations.Scala2Annotation
+import com.anjunar.reflections.core.scala.v2.members.Scala2MemberResolver
 import tastyquery.Contexts
 
 import scala.reflect.runtime.universe.{ClassInfoType, ClassSymbol, ModuleSymbol, PolyType}
