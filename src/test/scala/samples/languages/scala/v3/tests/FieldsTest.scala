@@ -1,8 +1,8 @@
-package samples.tests
+package samples.languages.scala.v3.tests
 
 import org.scalatest.funsuite.AnyFunSuite
 import samples.Environment.resolver.findStaticClass
-import samples.models.Person
+import samples.languages.scala.v3.models.Person
 
 class FieldsTest extends AnyFunSuite {
 
@@ -10,9 +10,9 @@ class FieldsTest extends AnyFunSuite {
     val person = new Person
     person.firstName = "Max"
     person.lastName = "Mustermann"
-    
+
     val personClass = findStaticClass(classOf[Person])
-    
+
     val firstNameField = personClass
       .declaredField("firstName")
       .get

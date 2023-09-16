@@ -7,7 +7,9 @@ import tastyquery.{Classpaths, Contexts}
 
 import java.io.{ByteArrayOutputStream, InputStream}
 import java.lang.reflect.{GenericArrayType, ParameterizedType, Type, TypeVariable, WildcardType}
+import java.util
 import scala.collection.mutable
+import scala.jdk.CollectionConverters.*
 import scala.reflect.runtime.universe
 import scala.reflect.runtime.universe.runtimeMirror
 
@@ -88,7 +90,9 @@ object Reflections {
     IArray.from(byteArrayOutputStream.toByteArray)
   }
 
-  def init(classes: Iterable[Class[_]]) = {
+  def init(classes: util.Collection[Class[_]]): TypeResolver = init(classes.asScala)
+  
+  def init(classes: Iterable[Class[_]]): TypeResolver = {
 
     classes.foreach(traverse(_))
 

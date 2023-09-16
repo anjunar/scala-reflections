@@ -1,11 +1,9 @@
 package samples
 
-import com.anjunar.reflections.{Reflections, TypeResolver}
 import com.anjunar.reflections.beans.Introspector
+import com.anjunar.reflections.{Reflections, TypeResolver}
 import com.google.common.reflect.ClassPath
-
-import scala.collection.mutable
-import scala.jdk.CollectionConverters.*
+import java.util.stream.Collectors
 
 object Environment {
 
@@ -13,11 +11,12 @@ object Environment {
 
   val classPath: ClassPath = ClassPath.from(ClassLoader.getSystemClassLoader)
   
-  val allClasses: mutable.Set[Class[_]] = classPath
+  val allClasses: java.util.Set[Class[_]] = classPath
     .getAllClasses
-    .asScala
+    .stream()
     .filter(clazz => packages.exists(p => clazz.getPackageName.startsWith(p)))
     .map(_.load())
+    .collect(Collectors.toSet)
 
   val resolver: TypeResolver = Reflections.init(allClasses)
   

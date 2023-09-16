@@ -1,9 +1,9 @@
-package samples.tests
+package samples.languages.scala.v3.tests
 
 import jakarta.validation.constraints.Size
 import org.scalatest.funsuite.AnyFunSuite
-import samples.Environment.resolver.*
-import samples.models.Person
+import samples.Environment.resolver.findStaticClass
+import samples.languages.scala.v3.models.Person
 
 class AnnotationsTest extends AnyFunSuite {
 

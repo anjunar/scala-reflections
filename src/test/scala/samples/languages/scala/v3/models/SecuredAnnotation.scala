@@ -1,4 +1,4 @@
-package samples.models
+package samples.languages.scala.v3.models
 
 import scala.annotation.StaticAnnotation
 

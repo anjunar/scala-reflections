@@ -1,9 +1,9 @@
-package samples.tests
+package samples.languages.scala.v3.tests
 
 import com.anjunar.reflections.core.api.types.ResolvedClass
 import org.scalatest.funsuite.AnyFunSuite
 import samples.Environment.resolver.findStaticClass
-import samples.models.Person
+import samples.languages.scala.v3.models.Person
 
 class TypesTest extends AnyFunSuite {
 

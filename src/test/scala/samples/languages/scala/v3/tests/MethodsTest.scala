@@ -1,8 +1,8 @@
-package samples.tests
+package samples.languages.scala.v3.tests
 
 import org.scalatest.funsuite.AnyFunSuite
 import samples.Environment.resolver.findStaticClass
-import samples.models.Person
+import samples.languages.scala.v3.models.Person
 
 class MethodsTest extends AnyFunSuite {
   
