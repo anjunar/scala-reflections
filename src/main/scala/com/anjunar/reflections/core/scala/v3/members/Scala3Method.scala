@@ -11,11 +11,11 @@ import tastyquery.Symbols.TermSymbol
 class Scala3Method(underlying: TermSymbol, owner : ResolvedNode)(using context: Contexts.Context) extends Scala3Executable(underlying, owner) with ResolvedMethod {
 
   private lazy val javaMethod = {
-    val clazz = PathResolver.scala3ToJava(underlying.owner.asType, owner.asInstanceOf[ResolvedClass].isModule)
+    val clazz = PathResolver.scala3ToJava(underlying.owner.fullName.toString())
     val array = parameters.map(parameter => {
 
       def recursion(resolvedType: ResolvedType): Class[_] = resolvedType match {
-        case resolvedClass: ResolvedClass => PathResolver.scala3ToJava(resolvedClass.fullName, resolvedClass.isModule)
+        case resolvedClass: ResolvedClass => PathResolver.scala3ToJava(resolvedClass.fullName)
         case parameterizedType: ResolvedParameterizedType => recursion(parameterizedType.declaredType)
       }
 

@@ -12,7 +12,7 @@ import tastyquery.Symbols.TermSymbol
 class Scala3Field(underlying: TermSymbol, owner : ResolvedNode)(using context: Contexts.Context) extends Scala3Member(underlying, owner) with ResolvedField {
 
   private lazy val javaField = {
-    val clazz = PathResolver.scala3ToJava(underlying.owner.asType, owner.asInstanceOf[ResolvedClass].isModule)
+    val clazz = PathResolver.scala3ToJava(underlying.owner.fullName.toString())
     val field = clazz.getDeclaredField(name)
     field.setAccessible(true)
     field

@@ -1,7 +1,7 @@
 package com.anjunar.reflections
 
 import com.anjunar.reflections.Reflections
-import tastyquery.Symbols.{TypeMemberSymbol, TypeSymbol}
+import tastyquery.Symbols.{ClassSymbol, TypeMemberSymbol, TypeSymbol}
 import tastyquery.Types.{AppliedType, LambdaType, TypeMappable, TypeRef}
 import tastyquery.{Contexts, Symbols}
 
@@ -9,11 +9,11 @@ import scala.annotation.tailrec
 import scala.reflect.runtime.universe
 
 object PathResolver {
-  def scala2ToScala3(symbol: universe.TypeSymbol, isModule : Boolean)(using context: Contexts.Context): Symbols.ClassSymbol = {
+  def scala2ToScala3(symbol: universe.TypeSymbol)(using context: Contexts.Context): Symbols.ClassSymbol = {
     val fullName = symbol.owner.fullName + "." + symbol.name.decoded
     val segments = fullName.split("\\.")
     val packageSymbol = context.findPackage(segments.head)
-    scala2ToScala3(packageSymbol, segments.drop(1), isModule)
+    scala2ToScala3(packageSymbol, segments.drop(1), symbol.isModule)
   }
 
   @tailrec
@@ -56,10 +56,10 @@ object PathResolver {
     case typeMemberSymbol: TypeMemberSymbol if typeMemberSymbol.fullName.toString() == "scala.Nothing" => context.findStaticClass("scala.runtime.Nothing$")
   }
 
-  def scala3ToScala2(symbol: TypeSymbol, isModule : Boolean): universe.Symbol = {
+  def scala3ToScala2(symbol: ClassSymbol): universe.Symbol = {
     val fullName = symbol.fullName.toString()
     val segments = fullName.split("\\.")
-    scala3ToScala2(Reflections.mirror.staticPackage(segments.head), segments.drop(1), isModule)
+    scala3ToScala2(Reflections.mirror.staticPackage(segments.head), segments.drop(1), symbol.isModuleClass)
   }
 
   def scala3ToScala2(symbol: universe.Symbol, segments: Array[String], isModule : Boolean): universe.Symbol = symbol match {
@@ -94,12 +94,12 @@ object PathResolver {
       PathResolver.scala3ToScala2(methodSymbol.returnType.typeSymbol, segments, isModule)
   }
 
-  def scala3ToJava(symbol: TypeSymbol, isModule : Boolean): Class[_] = {
+  def scala3ToJava(symbol: ClassSymbol): Class[_] = {
     val fullName = symbol.fullName.toString()
-    scala3ToJava(fullName, isModule)
+    scala3ToJava(fullName)
   }
 
-  def scala3ToJava(fullName: String, isModule : Boolean): Class[_] = {
+  def scala3ToJava(fullName: String): Class[_] = {
     val segments = fullName.split("\\.")
     val packages = segments.filter(segment => segment.matches("^[a-z]\\w+"))
     val firstClass = {
@@ -109,11 +109,11 @@ object PathResolver {
         packages ++ Array(segments(packages.length))
       }
     }
-    val classSymbol = scala3ToJava(Class.forName(firstClass.mkString("."), false, getClass.getClassLoader), segments.drop(firstClass.length), isModule)
+    val classSymbol = scala3ToJava(Class.forName(firstClass.mkString("."), false, getClass.getClassLoader), segments.drop(firstClass.length))
     classSymbol
   }
 
-  def scala3ToJava(value: Class[_], segments: Array[String], isModule : Boolean): Class[_] = {
+  def scala3ToJava(value: Class[_], segments: Array[String]): Class[_] = {
     if (segments.isEmpty) {
       value
     } else {
@@ -121,7 +121,7 @@ object PathResolver {
       if (option.isEmpty) {
         throw new IllegalStateException("Not found")
       } else {
-        scala3ToJava(option.get, segments.drop(1), isModule)
+        scala3ToJava(option.get, segments.drop(1))
       }
     }
   }

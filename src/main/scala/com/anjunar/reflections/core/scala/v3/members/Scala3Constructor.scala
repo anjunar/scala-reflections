@@ -11,14 +11,12 @@ import tastyquery.Symbols.TermSymbol
 class Scala3Constructor(underlying: TermSymbol, owner : ResolvedNode)(using context: Contexts.Context) extends Scala3Executable(underlying, owner) with ResolvedConstructor {
 
   private lazy val javaConstructor = {
-    val clazz = PathResolver.scala3ToJava(underlying.owner.asType, owner.asInstanceOf[ResolvedClass].isModule)
+    val clazz = PathResolver.scala3ToJava(underlying.owner.fullName.toString)
     val array = parameters.map(parameter => {
-
       def recursion(resolvedType: ResolvedType): Class[_] = resolvedType match {
-        case resolvedClass: ResolvedClass => PathResolver.scala3ToJava(resolvedClass.fullName, resolvedClass.isModule)
+        case resolvedClass: ResolvedClass => PathResolver.scala3ToJava(resolvedClass.fullName)
         case parameterizedType: ResolvedParameterizedType => recursion(parameterizedType.declaredType)
       }
-
       recursion(parameter.declaredType)
     })
     clazz.getConstructor(array: _*)
