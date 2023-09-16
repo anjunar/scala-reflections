@@ -26,6 +26,7 @@ class TypeResolver(classPath: Classpath)(using context: Context) {
 
   def findStaticClass(clazz: Class[_]): ResolvedClass = Dispatcher.resolve[ResolvedClass](context.findStaticClass(clazz.getName), null)
   def findStaticModule(clazz: Class[_]): ResolvedClass = Dispatcher.resolve[ResolvedClass](context.findStaticModuleClass(clazz.getName), null)
+
   
   def findExtendingClasses(clazz: Class[_]): Array[ResolvedClass] = {
     val resolvedClass = findStaticClass(clazz)

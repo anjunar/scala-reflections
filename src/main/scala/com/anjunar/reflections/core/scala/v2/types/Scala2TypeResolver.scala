@@ -6,7 +6,7 @@ import com.anjunar.reflections.core.api.types.ResolvedType
 import com.anjunar.reflections.{Dispatcher, PathResolver}
 import tastyquery.Contexts
 
-import scala.reflect.runtime.universe.{AppliedTypeTree, ClassSymbol, PolyType, RefinedType, Symbol, Type, TypeBounds, TypeRef, TypeSymbol}
+import scala.reflect.runtime.universe.{AppliedTypeTree, ClassSymbol, PolyType, RefinedType, Symbol, Type, TypeBounds, TypeRef, TypeSymbol, ModuleSymbol}
 
 object Scala2TypeResolver {
 
@@ -34,16 +34,16 @@ object Scala2TypeResolver {
           if (fullName.contains("<") && fullName.contains(">")) {
             new Scala2Class(classSymbol, owner)
           } else {
-            Dispatcher.finalResolve(PathResolver.scala2ToScala3(classSymbol), owner)         
+            Dispatcher.finalResolve(PathResolver.scala2ToScala3(classSymbol), owner)
           }
         }
     case typeSymbol: TypeSymbol =>
       typeSymbol.typeSignature match
         case typeBounds: TypeBounds => new Scala2TypeVariableWithBounds(typeSymbol, owner)
         case _ => new Scala2TypeVariable(typeSymbol.name.toString, owner)
-    }
-  
-    result.asInstanceOf[R]
+  }
+
+  result.asInstanceOf[R]
 }
 
 }

@@ -18,7 +18,13 @@ class Scala2Method(underlying: MethodSymbol, owner: ResolvedNode)(using context:
     methodMirror.apply(args: _*)
   }
   override def invokeStatic(args: Any*): Any = {
-    val clazz = owner.underlying.asInstanceOf[ClassSymbol]
+    val clazz = {
+      if (caller == null) {
+        owner.underlying.asInstanceOf[ClassSymbol]
+      } else {
+        caller.underlying.asInstanceOf[ClassSymbol]
+      }
+    }
     val instance = Reflections.mirror.reflectModule(clazz.asModule).instance
     val instanceMirror = Reflections.mirror.reflect(instance)
     val methodMirror = instanceMirror.reflectMethod(underlying)

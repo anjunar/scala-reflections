@@ -51,7 +51,10 @@ trait ResolvedClass extends ResolvedType with ResolvedAnnotated {
     def recursion(clazz: ResolvedType): Unit = clazz match
       case resolvedClass: ResolvedClass =>
         result.addOne(resolvedClass)
-
+        // Todo : Workaround because of a Stack overflow
+        if (result.size > 1000) {
+          return
+        }
         resolvedClass.superClass match
           case clazz: ResolvedClass => recursion(clazz)
           case parameterizedType: ResolvedParameterizedType => recursion(parameterizedType.declaredType)

@@ -24,7 +24,7 @@ class Scala2Class(underlying: ClassSymbol, owner: ResolvedNode)(using context: C
 
   override val isEnum: Boolean = underlying.isJavaEnum
   
-  override val isModule: Boolean = underlying.isModule
+  override val isModule: Boolean = underlying.isModuleClass
   
   override lazy val isAnnotation: Boolean = superClass match {
     case clazz: ResolvedClass => clazz.fullName == "scala.annotation.Annotation" || clazz.fullName == "scala.annotation.StaticAnnotation"

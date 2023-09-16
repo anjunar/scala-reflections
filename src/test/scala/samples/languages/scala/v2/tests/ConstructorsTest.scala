@@ -15,8 +15,9 @@ class ConstructorsTest extends AnyFunSuite {
       .methods("apply")
 
     val applyMethod = applyMethods.head
+    
 
-    val hashSet = applyMethod.invokeStatic("Foo Baa")
+    val hashSet = applyMethod.bind(resolvedClass).invokeStatic("Foo Baa")
 
     println(hashSet)
 

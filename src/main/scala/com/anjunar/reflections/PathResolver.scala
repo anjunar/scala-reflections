@@ -13,13 +13,15 @@ object PathResolver {
     val fullName = symbol.owner.fullName + "." + symbol.name.decoded
     val segments = fullName.split("\\.")
     val packageSymbol = context.findPackage(segments.head)
-    scala2ToScala3(packageSymbol, segments.drop(1), symbol.isModule)
+    scala2ToScala3(packageSymbol, segments.drop(1), symbol.isModuleClass)
   }
 
   @tailrec
   def scala2ToScala3(symbol: Symbols.Symbol, segments: Array[String], isModule : Boolean)(using context: Contexts.Context): Symbols.ClassSymbol = symbol match {
     case packageSymbol: Symbols.PackageSymbol =>
-      val option = packageSymbol.declarations.find(decl => decl.name.decode.toString == segments.head)
+      val option = packageSymbol
+        .declarations
+        .find(decl => (decl.name.decode.toString == segments.head) && (decl.isPackage || (decl.isClass && decl.asClass.isModuleClass == isModule)))
       if (option.isEmpty) {
         throw new IllegalStateException("Not found")
       } else {
@@ -62,19 +64,39 @@ object PathResolver {
     scala3ToScala2(Reflections.mirror.staticPackage(segments.head), segments.drop(1), symbol.isModuleClass)
   }
 
+  @tailrec
   def scala3ToScala2(symbol: universe.Symbol, segments: Array[String], isModule : Boolean): universe.Symbol = symbol match {
-    case classSymbol: universe.ClassSymbol if segments.isEmpty => classSymbol
+    case classSymbol: universe.ClassSymbol if segments.isEmpty => {
+      if (isModule) {
+        if (classSymbol.isModuleClass) {
+          classSymbol
+        } else {
+          classSymbol.companion
+        }
+      } else {
+        classSymbol
+      }
+    }
     case typeSymbol: universe.TypeSymbol if segments.isEmpty => typeSymbol
-    case packageSymbol: universe.ModuleSymbol if segments.isEmpty => packageSymbol
+    case packageSymbol: universe.ModuleSymbol if segments.isEmpty => packageSymbol.moduleClass
     case packageSymbol: universe.ModuleSymbol =>
       val option = packageSymbol.typeSignature.decls.find(decl => decl.name.decoded == segments.head)
       if (option.isEmpty) {
         // Todo : Workaround: This Block is due to the fact, that classloading with scala reflection is buggy
         val value = s"${symbol.fullName}.${segments.head}"
-        try
-          PathResolver.scala3ToScala2(Reflections.mirror.staticPackage(PathResolver.convert(value)), segments.drop(1), isModule)
+        var firstModuleSymbol : universe.Symbol = null
+        try {
+          firstModuleSymbol = Reflections.mirror.staticPackage(PathResolver.convert(value))
+        }
         catch
-          case _ => PathResolver.scala3ToScala2(Reflections.mirror.staticClass(PathResolver.convert(value)), segments.drop(1), isModule)
+          case _ => {
+            if (isModule) {
+              firstModuleSymbol = Reflections.mirror.staticModule(PathResolver.convert(value))
+            } else {
+              firstModuleSymbol = Reflections.mirror.staticClass(PathResolver.convert(value))
+            }
+          }
+        PathResolver.scala3ToScala2(firstModuleSymbol, segments.drop(1), isModule)
       } else {
         PathResolver.scala3ToScala2(option.get, segments.drop(1), isModule)
       }
