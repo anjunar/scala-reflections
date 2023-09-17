@@ -5,6 +5,7 @@ import com.anjunar.reflections.core.api.Visitor
 import com.anjunar.reflections.core.api.annotations.{ResolvedAnnotated, ResolvedAnnotation}
 import com.anjunar.reflections.core.api.members.*
 
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 object ResolvedClass {
@@ -46,33 +47,32 @@ trait ResolvedClass extends ResolvedType with ResolvedAnnotated {
   def isSubType(clazz: ResolvedClass): Boolean = parentsHierarchy.contains(clazz)
 
   lazy val parentsHierarchy: Array[ResolvedClass] = {
-    val result = ListBuffer[ResolvedClass]()
+    val result = mutable.LinkedHashSet[ResolvedClass]()
 
     def recursion(clazz: ResolvedType): Unit = clazz match
       case resolvedClass: ResolvedClass =>
-        result.addOne(resolvedClass)
-        // Todo : Workaround because of a Stack overflow
-        if (result.size > 100) {
-          return
-        }
-        resolvedClass.superClass match
-          case clazz: ResolvedClass => recursion(clazz)
-          case parameterizedType: ResolvedParameterizedType => recursion(parameterizedType.declaredType)
-          case _ => {}
+        if (! result.contains(resolvedClass)) {
+          result.addOne(resolvedClass)
 
-        resolvedClass.parents
-          .filter(! _.isInstanceOf[ResolvedTypeVariable])
-          .foreach({
+          resolvedClass.superClass match
             case clazz: ResolvedClass => recursion(clazz)
             case parameterizedType: ResolvedParameterizedType => recursion(parameterizedType.declaredType)
-          })
+            case _ => {}
+
+          resolvedClass.parents
+            .filter(!_.isInstanceOf[ResolvedTypeVariable])
+            .foreach({
+              case clazz: ResolvedClass => recursion(clazz)
+              case parameterizedType: ResolvedParameterizedType => recursion(parameterizedType.declaredType)
+            })
+        }
       case parameterizedType: ResolvedParameterizedType => recursion(parameterizedType.declaredType)
       case _ => {}
 
     recursion(superClass)
     parents.foreach(recursion)
 
-    result.distinct.toArray
+    result.toArray
   }
 
   override lazy val annotations: Array[ResolvedAnnotation] = declaredAnnotations ++ parentsHierarchy.flatMap(_.declaredAnnotations).distinct
