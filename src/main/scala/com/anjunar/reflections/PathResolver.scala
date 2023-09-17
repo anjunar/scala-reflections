@@ -9,37 +9,42 @@ import scala.annotation.tailrec
 import scala.reflect.runtime.universe
 
 object PathResolver {
-  def scala2ToScala3(symbol: universe.TypeSymbol)(using context: Contexts.Context): Symbols.ClassSymbol = {
+  def scala2ToScala3(symbol: universe.Symbol)(using context: Contexts.Context): Symbols.Symbol = {
     val fullName = symbol.owner.fullName + "." + symbol.name.decoded
     val segments = fullName.split("\\.")
     val packageSymbol = context.findPackage(segments.head)
-    scala2ToScala3(packageSymbol, segments.drop(1), symbol.isModuleClass)
+    scala2ToScala3(packageSymbol, segments.drop(1), symbol.isModuleClass || symbol.isModule).get
   }
 
-  @tailrec
-  def scala2ToScala3(symbol: Symbols.Symbol, segments: Array[String], isModule : Boolean)(using context: Contexts.Context): Symbols.ClassSymbol = symbol match {
+  def scala2ToScala3(symbol: Symbols.Symbol, segments: Array[String], isModule : Boolean)(using context: Contexts.Context): Option[Symbols.Symbol] = symbol match {
     case packageSymbol: Symbols.PackageSymbol =>
-      val option = packageSymbol
+      packageSymbol
         .declarations
-        .find(decl => (decl.name.decode.toString == segments.head) && (decl.isPackage || (decl.isClass && decl.asClass.isModuleClass == isModule)))
-      if (option.isEmpty) {
-        throw new IllegalStateException("Not found")
-      } else {
-        PathResolver.scala2ToScala3(option.get, segments.drop(1), isModule)
-      }
-    case classSymbol: Symbols.ClassSymbol if segments.isEmpty => classSymbol
-    case classSymbol: Symbols.ClassSymbol =>
-      val option = classSymbol.declarations.find(decl => decl.name.toString == segments.head)
-      if (option.isEmpty) {
-        val option = classSymbol.companionClass.get.declarations.find(decl => decl.name.toString == segments.head)
-        if (option.isEmpty) {
-          throw new IllegalStateException("Not found")
+        .filter(decl => decl.name.decode.toString == segments.head && (decl.isClass || decl.isPackage))
+        .map(decl => PathResolver.scala2ToScala3(decl, segments.drop(1), isModule))
+        .find(_.isInstanceOf[Some[Symbols.Symbol]])
+        .flatten
+    case classSymbol: Symbols.ClassSymbol if segments.isEmpty =>
+      if (isModule) {
+        if (classSymbol.isModuleClass) {
+          Some(classSymbol)
         } else {
-          PathResolver.scala2ToScala3(option.get, segments.drop(1), isModule)
+          None
         }
       } else {
-        PathResolver.scala2ToScala3(option.get, segments.drop(1), isModule)
+        if (classSymbol.isModuleClass) {
+          None
+        } else {
+          Some(classSymbol)
+        }
       }
+    case classSymbol: Symbols.ClassSymbol =>
+      classSymbol
+        .declarations
+        .filter(decl => decl.name.toString == segments.head)
+        .map(decl => PathResolver.scala2ToScala3(decl, segments.drop(1), isModule))
+        .find(_.isInstanceOf[Some[Symbols.Symbol]])
+        .flatten
     case termSymbol: Symbols.TermSymbol =>
       val moduleClass = termSymbol.moduleClass
       if (moduleClass.isEmpty) {
@@ -50,12 +55,13 @@ object PathResolver {
         }
 
         val value = recursion(termSymbol.declaredType)
-        PathResolver.scala2ToScala3(value.asClass, segments, isModule)
+        PathResolver.scala2ToScala3(value, segments, isModule)
       } else {
-        PathResolver.scala2ToScala3(moduleClass.get.asClass, segments, isModule)
+        PathResolver.scala2ToScala3(moduleClass.get, segments, isModule)
       }
     // Todo : Workaround, is Nothing referenced right?
-    case typeMemberSymbol: TypeMemberSymbol if typeMemberSymbol.fullName.toString() == "scala.Nothing" => context.findStaticClass("scala.runtime.Nothing$")
+    case typeMemberSymbol: TypeMemberSymbol if typeMemberSymbol.fullName.toString() == "scala.Nothing" =>
+      Some(context.findStaticClass("scala.runtime.Nothing$"))
   }
 
   def scala3ToScala2(symbol: ClassSymbol): universe.Symbol = {

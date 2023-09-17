@@ -8,32 +8,34 @@ import com.anjunar.reflections.core.scala.v3.members.Scala3MemberResolver
 import com.anjunar.reflections.core.scala.v3.types.{Scala3Class, Scala3TypeResolver}
 import tastyquery.Modifiers.TermSymbolKind
 import tastyquery.Symbols.{ClassSymbol, TermOrTypeSymbol, TermSymbol, TypeSymbol}
-import tastyquery.{Contexts, SourceLanguage}
+import tastyquery.{Contexts, SourceLanguage, Symbols}
 
 import scala.reflect.runtime.universe
 
 object Dispatcher {
 
 
-  def finalResolve(symbol: ClassSymbol, owner: ResolvedNode)(using context: Contexts.Context): ResolvedType = symbol.sourceLanguage match {
-    case SourceLanguage.Java =>
-      val classSymbol = PathResolver.scala3ToJava(symbol)
-      new JavaClass(classSymbol, owner)
-    case SourceLanguage.Scala2 =>
-      val classSymbol = PathResolver.scala3ToScala2(symbol)
-      classSymbol match
-        case classSymbol: universe.ClassSymbol => new Scala2Class(classSymbol, owner)
-        case typeSymbol: universe.TypeSymbol => {
-          // Todo : Workaround, is it really a TypeVariableWithBounds?
-          typeSymbol.typeSignature match
-            case bounds: universe.TypeBounds => new Scala2TypeVariableWithBounds(typeSymbol, owner)
-            case _ => new Scala2TypeVariable(typeSymbol.name.toString, owner)
-        }
-        case moduleSymbol: universe.ModuleSymbol => new Scala2Class(moduleSymbol, owner)
-    case SourceLanguage.Scala3 => new Scala3Class(symbol, owner)
+  def finalResolve(symbol: Symbols.Symbol, owner: ResolvedNode)(using context: Contexts.Context): ResolvedType = symbol match {
+    case symbol : ClassSymbol => symbol.sourceLanguage match {
+      case SourceLanguage.Java =>
+        val classSymbol = PathResolver.scala3ToJava(symbol)
+        new JavaClass(classSymbol, owner)
+      case SourceLanguage.Scala2 =>
+        val classSymbol = PathResolver.scala3ToScala2(symbol)
+        classSymbol match
+          case classSymbol: universe.ClassSymbol => new Scala2Class(classSymbol, owner)
+          case typeSymbol: universe.TypeSymbol => {
+            // Todo : Workaround, is it really a TypeVariableWithBounds?
+            typeSymbol.typeSignature match
+              case bounds: universe.TypeBounds => new Scala2TypeVariableWithBounds(typeSymbol, owner)
+              case _ => new Scala2TypeVariable(typeSymbol.name.toString, owner)
+          }
+          case moduleSymbol: universe.ModuleSymbol => new Scala2Class(moduleSymbol, owner)
+      case SourceLanguage.Scala3 => new Scala3Class(symbol, owner)
+    }
   }
 
-  def resolve[T <: ResolvedNode](symbol: TermOrTypeSymbol, owner: ResolvedNode)(using context: Contexts.Context): T = symbol match {
+  def resolveBegin[T <: ResolvedNode](symbol: TermOrTypeSymbol, owner: ResolvedNode)(using context: Contexts.Context): T = symbol match {
     case symbol: TermSymbol if symbol.kind == TermSymbolKind.Module => finalResolve(symbol.moduleClass.get.asClass, owner).asInstanceOf[T]
     case symbol: TermSymbol => symbol.sourceLanguage match
       case SourceLanguage.Java => throw new IllegalStateException("Members can only be defined in Java classes")

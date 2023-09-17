@@ -41,6 +41,7 @@ object Scala2TypeResolver {
       typeSymbol.typeSignature match
         case typeBounds: TypeBounds => new Scala2TypeVariableWithBounds(typeSymbol, owner)
         case _ => new Scala2TypeVariable(typeSymbol.name.toString, owner)
+    case module : ModuleSymbol => Dispatcher.finalResolve(PathResolver.scala2ToScala3(module), owner)
   }
 
   result.asInstanceOf[R]

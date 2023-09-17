@@ -16,7 +16,10 @@ class TypeResolver(classPath: Classpath)(using context: Context) {
           val value = context.findSymbolsByClasspathEntry(entry)
           value
             .filter(element => element.fullName.toString() != "module-info")
-            .map(element => Dispatcher.resolve[ResolvedClass](element, null))
+            .map(element => {
+              println(element.fullName.toString)
+              Dispatcher.resolveBegin[ResolvedClass](element, null)
+            })
         } else {
           List[ResolvedClass]()
         }
@@ -24,8 +27,8 @@ class TypeResolver(classPath: Classpath)(using context: Context) {
       .distinct
   }
 
-  def findStaticClass(clazz: Class[_]): ResolvedClass = Dispatcher.resolve[ResolvedClass](context.findStaticClass(clazz.getName), null)
-  def findStaticModule(clazz: Class[_]): ResolvedClass = Dispatcher.resolve[ResolvedClass](context.findStaticModuleClass(clazz.getName), null)
+  def findStaticClass(clazz: Class[_]): ResolvedClass = Dispatcher.resolveBegin[ResolvedClass](context.findStaticClass(clazz.getName), null)
+  def findStaticModule(clazz: Class[_]): ResolvedClass = Dispatcher.resolveBegin[ResolvedClass](context.findStaticModuleClass(clazz.getName), null)
 
   
   def findExtendingClasses(clazz: Class[_]): Array[ResolvedClass] = {

@@ -52,7 +52,7 @@ trait ResolvedClass extends ResolvedType with ResolvedAnnotated {
       case resolvedClass: ResolvedClass =>
         result.addOne(resolvedClass)
         // Todo : Workaround because of a Stack overflow
-        if (result.size > 1000) {
+        if (result.size > 100) {
           return
         }
         resolvedClass.superClass match

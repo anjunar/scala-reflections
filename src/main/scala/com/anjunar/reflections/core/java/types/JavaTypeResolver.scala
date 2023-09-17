@@ -31,7 +31,7 @@ object JavaTypeResolver {
               val reducedPath = path.dropRight(1).mkString(".")
               val className = javaClass.getSimpleName
               val classSymbol = context.findStaticClass(reducedPath)
-              val clazz = Dispatcher.resolve[ResolvedClass](classSymbol, owner)
+              val clazz = Dispatcher.resolveBegin[ResolvedClass](classSymbol, owner)
               val option = clazz.declaredClasses.find(clazz => clazz.name == className)
               option.get.asInstanceOf[R]
             }
