@@ -15,11 +15,14 @@ class ConstructorsTest extends AnyFunSuite {
       .methods("apply")
 
     val applyMethod = applyMethods.head
-    
 
-    val hashSet = applyMethod.bind(resolvedClass).invokeStatic("Foo Baa")
 
-    println(hashSet)
+    val hashSet : mutable.HashSet[String] = applyMethod
+      .bind(resolvedClass)
+      .invokeStatic("Foo Baa")
+      .asInstanceOf[mutable.HashSet[String]]
+
+    assert(hashSet.head == "Foo Baa")
 
   }
 

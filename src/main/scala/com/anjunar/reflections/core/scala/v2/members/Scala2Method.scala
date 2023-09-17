@@ -8,7 +8,7 @@ import com.anjunar.reflections.core.api.types.ResolvedType
 import com.anjunar.reflections.core.scala.v2.types.Scala2TypeResolver
 import tastyquery.Contexts
 
-import scala.reflect.runtime.universe.{MethodSymbol, ClassSymbol}
+import scala.reflect.runtime.universe.{MethodSymbol, ClassSymbol, ModuleSymbol}
 
 class Scala2Method(underlying: MethodSymbol, owner: ResolvedNode)(using context: Contexts.Context) extends Scala2Executable(underlying, owner) with ResolvedMethod {
 
@@ -22,14 +22,13 @@ class Scala2Method(underlying: MethodSymbol, owner: ResolvedNode)(using context:
       if (caller == null) {
         owner.underlying.asInstanceOf[ClassSymbol]
       } else {
-        caller.underlying.asInstanceOf[ClassSymbol]
+        caller.underlying.asInstanceOf[ModuleSymbol]
       }
     }
     val instance = Reflections.mirror.reflectModule(clazz.asModule).instance
     val instanceMirror = Reflections.mirror.reflect(instance)
     val methodMirror = instanceMirror.reflectMethod(underlying)
-    methodMirror.apply(args: _*)
-
+    methodMirror.apply(args)
   }
 
   override lazy val overridden: Array[ResolvedMethod] = underlying

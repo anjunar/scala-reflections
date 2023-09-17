@@ -12,32 +12,36 @@ import tastyquery.Contexts
 
 import scala.reflect.runtime.universe.{ClassInfoType, ClassSymbol, ModuleSymbol, PolyType}
 
-class Scala2Class(underlying: ClassSymbol, owner: ResolvedNode)(using context: Contexts.Context) extends Scala2Type(underlying, owner) with ResolvedClass {
+class Scala2Class(_underlying: ClassSymbol | ModuleSymbol, owner: ResolvedNode)(using context: Contexts.Context) extends Scala2Type(_underlying, owner) with ResolvedClass {
 
-  override val name: String = underlying.name.toString
+  private val underlying_ : ClassSymbol = _underlying match
+    case classSymbol : ClassSymbol => classSymbol.asClass
+    case moduleSymbol : ModuleSymbol => moduleSymbol.moduleClass.asClass
 
-  override val fullName: String = underlying.fullName
+  override val name: String = underlying_.name.toString
+
+  override val fullName: String = underlying_.fullName
 
   override val isArray: Boolean = false
 
-  override val isTrait: Boolean = underlying.isTrait
+  override val isTrait: Boolean = underlying_.isTrait
 
-  override val isEnum: Boolean = underlying.isJavaEnum
+  override val isEnum: Boolean = underlying_.isJavaEnum
   
-  override val isModule: Boolean = underlying.isModuleClass
+  override val isModule: Boolean = underlying_.isModuleClass
   
   override lazy val isAnnotation: Boolean = superClass match {
     case clazz: ResolvedClass => clazz.fullName == "scala.annotation.Annotation" || clazz.fullName == "scala.annotation.StaticAnnotation"
     case _ => false
   }
 
-  override val modifier: ResolvedClass.Modifier = underlying match
+  override val modifier: ResolvedClass.Modifier = underlying_ match
     case symbol: ClassSymbol if symbol.isPublic => ResolvedClass.Modifier.Public
     case symbol: ClassSymbol if symbol.isPrivate => ResolvedClass.Modifier.Private
     case symbol: ClassSymbol if symbol.isProtected => ResolvedClass.Modifier.Protected
     case _ => Public
 
-  override lazy val parents: Array[ResolvedType] = underlying.typeSignature.resultType match
+  override lazy val parents: Array[ResolvedType] = underlying_.typeSignature.resultType match
     case classInfoType : ClassInfoType => classInfoType
       .parents
       .drop(1)
@@ -45,9 +49,9 @@ class Scala2Class(underlying: ClassSymbol, owner: ResolvedNode)(using context: C
       .toArray
     case _ => Array()
 
-  override lazy val superClass: ResolvedType = underlying.typeSignature match {
+  override lazy val superClass: ResolvedType = underlying_.typeSignature match {
     case polyType : PolyType =>
-      val base = underlying
+      val base = underlying_
         .typeSignature
         .resultType
         .asInstanceOf[ClassInfoType]
@@ -59,19 +63,19 @@ class Scala2Class(underlying: ClassSymbol, owner: ResolvedNode)(using context: C
     case _ => null
   }
 
-  override lazy val typeParameters: Array[ResolvedType] = underlying
+  override lazy val typeParameters: Array[ResolvedType] = underlying_
     .typeParams
     .map(param => Scala2TypeResolver.resolve[ResolvedType](param, this))
     .toArray
 
-  override lazy val declaredClasses: Array[ResolvedClass] = underlying
+  override lazy val declaredClasses: Array[ResolvedClass] = underlying_
     .toType
     .decls
     .filter(member => member.isClass)
     .map(member => new Scala2Class(member.asClass, this))
     .toArray
 
-  override lazy val declaredMembers: Array[ResolvedMember] = underlying
+  override lazy val declaredMembers: Array[ResolvedMember] = underlying_
     .toType
     .decls
     .filter({
@@ -99,7 +103,7 @@ class Scala2Class(underlying: ClassSymbol, owner: ResolvedNode)(using context: C
     .filter(member => member.isInstanceOf[ResolvedMethod])
     .map(_.asInstanceOf[ResolvedMethod])
 
-  override lazy val declaredAnnotations: Array[ResolvedAnnotation] = underlying
+  override lazy val declaredAnnotations: Array[ResolvedAnnotation] = underlying_
     .annotations
     .map(annotation => new Scala2Annotation(annotation, this))
     .toArray

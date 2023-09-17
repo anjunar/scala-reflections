@@ -29,7 +29,7 @@ object Dispatcher {
             case bounds: universe.TypeBounds => new Scala2TypeVariableWithBounds(typeSymbol, owner)
             case _ => new Scala2TypeVariable(typeSymbol.name.toString, owner)
         }
-        case moduleSymbol: universe.ModuleSymbol => new Scala2Class(moduleSymbol.typeSignature.typeSymbol.asClass, owner)
+        case moduleSymbol: universe.ModuleSymbol => new Scala2Class(moduleSymbol, owner)
     case SourceLanguage.Scala3 => new Scala3Class(symbol, owner)
   }
 
