@@ -92,7 +92,23 @@ class JavaClass(override val underlying : Class[_], owner : ResolvedNode)(using 
     case "float" => classOf[Float]
     case "double" => classOf[Double]
     case "byte" => classOf[Byte]
-    case _ => Class.forName(param.getName)
+    case "boolean" => classOf[Boolean]
+
+    case "short[]" => classOf[Array[Short]]
+    case "long[]" => classOf[Array[Long]]
+    case "int[]" => classOf[Array[Int]]
+    case "char[]" => classOf[Array[Char]]
+    case "float[]" => classOf[Array[Float]]
+    case "double[]" => classOf[Array[Double]]
+    case "byte[]" => classOf[Array[Byte]]
+    case "boolean[]" => classOf[Array[Boolean]]
+
+    case _ =>
+      if (param.isArray) {
+        Class.forName("[L" + param.getName + ";")
+      } else {
+        Class.forName(param.getName)
+      }
   }
 
   override lazy val declaredAnnotations: Array[ResolvedAnnotation] = underlying

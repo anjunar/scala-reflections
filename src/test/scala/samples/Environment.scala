@@ -1,6 +1,7 @@
 package samples
 
 import com.anjunar.reflections.beans.Introspector
+import com.anjunar.reflections.core.Utils
 import com.anjunar.reflections.{Reflections, TypeResolver}
 import com.google.common.reflect.ClassPath
 
@@ -8,7 +9,7 @@ import java.util.stream.Collectors
 
 object Environment {
 
-  val packages: List[String] = List("com.anjunar", "scala", "samples")
+  val packages: List[String] = List("com.anjunar", "scala", "samples", "tastyquery")
 
   val classPath: ClassPath = ClassPath.from(ClassLoader.getSystemClassLoader)
   
@@ -23,5 +24,6 @@ object Environment {
   
   val introSpector: Introspector = new Introspector(resolver)
 
+  resolver.findClassesInClasspath.foreach(Utils.renderToConsole)
 
 }

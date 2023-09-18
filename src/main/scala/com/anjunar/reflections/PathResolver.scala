@@ -14,7 +14,10 @@ object PathResolver {
     val fullName = symbol.owner.fullName + "." + symbol.name.decoded
     val segments = fullName.split("\\.")
     val packageSymbol = context.findPackage(segments.head)
-    scala2ToScala3(packageSymbol, segments.drop(1), symbol.isModuleClass || symbol.isModule).get
+    val option = scala2ToScala3(packageSymbol, segments.drop(1), symbol.isModuleClass || symbol.isModule)
+    option.getOrElse({
+      throw IllegalStateException(fullName + " not Found")
+    })
   }
 
   def scala2ToScala3(symbol: Symbols.Symbol, segments: Array[String], isModule : Boolean)(using context: Contexts.Context): Option[Symbols.Symbol] = symbol match {
@@ -72,7 +75,10 @@ object PathResolver {
   def scala3ToScala2(symbol: ClassSymbol): universe.Symbol = {
     val fullName = symbol.fullName.toString()
     val segments = fullName.split("\\.")
-    scala3ToScala2(Reflections.mirror.staticPackage(segments.head), segments.drop(1), symbol.isModuleClass).get
+    val option = scala3ToScala2(Reflections.mirror.staticPackage(segments.head), segments.drop(1), symbol.isModuleClass)
+    option.getOrElse({
+      throw IllegalStateException(fullName + " not Found")
+    })
   }
 
   def scala3ToScala2(symbol: universe.Symbol, segments: Array[String], isModule : Boolean): Option[universe.Symbol] = symbol match {
@@ -93,8 +99,14 @@ object PathResolver {
         }
         catch
           case _ =>
-            firstModuleSymbol.addOne(Reflections.mirror.staticModule(PathResolver.convert(value)))
-            firstModuleSymbol.addOne(Reflections.mirror.staticClass(PathResolver.convert(value)))
+            try
+              firstModuleSymbol.addOne(Reflections.mirror.staticModule(PathResolver.convert(value)))
+            catch
+              case _ =>
+            try
+              firstModuleSymbol.addOne(Reflections.mirror.staticClass(PathResolver.convert(value)))
+            catch
+              case _ =>
         firstModuleSymbol
           .map(decl => PathResolver.scala3ToScala2(decl, segments.drop(1), isModule))
           .find(_.isInstanceOf[Some[universe.Symbol]])

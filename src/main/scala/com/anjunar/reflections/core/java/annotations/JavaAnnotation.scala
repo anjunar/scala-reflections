@@ -23,7 +23,7 @@ class JavaAnnotation(underlying: Annotation, owner: ResolvedNode)(using context:
 
 
   override val fields: Map[String, Object] = underlying
-    .getClass
+    .annotationType()
     .getDeclaredMethods
     .filter(method => Modifier.isPublic(method.getModifiers) && method.getParameterCount == 0)
     .map(method => Tuple2(method.getName, method.invoke(underlying)))
