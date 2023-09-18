@@ -36,15 +36,15 @@ object Dispatcher {
   }
 
   def resolveBegin[T <: ResolvedNode](symbol: TermOrTypeSymbol, owner: ResolvedNode)(using context: Contexts.Context): T = symbol match {
-    case symbol: TermSymbol if symbol.kind == TermSymbolKind.Module => finalResolve(symbol.moduleClass.get.asClass, owner).asInstanceOf[T]
-    case symbol: TermSymbol => symbol.sourceLanguage match
+    case termSymbol: TermSymbol if termSymbol.kind == TermSymbolKind.Module => finalResolve(termSymbol.moduleClass.get.asClass, owner).asInstanceOf[T]
+    case termSymbol: TermSymbol => termSymbol.sourceLanguage match
       case SourceLanguage.Java => throw new IllegalStateException("Members can only be defined in Java classes")
       case SourceLanguage.Scala2 => ???
-      case SourceLanguage.Scala3 => Scala3MemberResolver.resolve[T](symbol, owner)
-    case symbol: ClassSymbol => symbol.sourceLanguage match {
-      case SourceLanguage.Java => JavaTypeResolver.resolve[T](PathResolver.scala3ToJava(symbol), owner)
-      case SourceLanguage.Scala2 => Scala2TypeResolver.resolve[T](PathResolver.scala3ToScala2(symbol), owner)
-      case SourceLanguage.Scala3 => Scala3TypeResolver.resolve[T](symbol, owner)
+      case SourceLanguage.Scala3 => Scala3MemberResolver.resolve[T](termSymbol, owner)
+    case classSymbol: ClassSymbol => classSymbol.sourceLanguage match {
+      case SourceLanguage.Java => JavaTypeResolver.resolve[T](PathResolver.scala3ToJava(classSymbol), owner)
+      case SourceLanguage.Scala2 => Scala2TypeResolver.resolve[T](PathResolver.scala3ToScala2(classSymbol), owner)
+      case SourceLanguage.Scala3 => Scala3TypeResolver.resolve[T](classSymbol, owner)
     }
   }
 

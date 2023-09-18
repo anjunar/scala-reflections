@@ -6,6 +6,7 @@ import tastyquery.Types.{AppliedType, LambdaType, TypeMappable, TypeRef}
 import tastyquery.{Contexts, Symbols}
 
 import scala.annotation.tailrec
+import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe
 
 object PathResolver {
@@ -25,19 +26,7 @@ object PathResolver {
         .find(_.isInstanceOf[Some[Symbols.Symbol]])
         .flatten
     case classSymbol: Symbols.ClassSymbol if segments.isEmpty =>
-      if (isModule) {
-        if (classSymbol.isModuleClass) {
-          Some(classSymbol)
-        } else {
-          None
-        }
-      } else {
-        if (classSymbol.isModuleClass) {
-          None
-        } else {
-          Some(classSymbol)
-        }
-      }
+      isValidEnd(isModule, classSymbol)
     case classSymbol: Symbols.ClassSymbol =>
       classSymbol
         .declarations
@@ -64,47 +53,57 @@ object PathResolver {
       Some(context.findStaticClass("scala.runtime.Nothing$"))
   }
 
+  private def isValidEnd(isModule: Boolean, classSymbol: ClassSymbol) = {
+    if (isModule) {
+      if (classSymbol.isModuleClass) {
+        Some(classSymbol)
+      } else {
+        None
+      }
+    } else {
+      if (classSymbol.isModuleClass) {
+        None
+      } else {
+        Some(classSymbol)
+      }
+    }
+  }
+
   def scala3ToScala2(symbol: ClassSymbol): universe.Symbol = {
     val fullName = symbol.fullName.toString()
     val segments = fullName.split("\\.")
-    scala3ToScala2(Reflections.mirror.staticPackage(segments.head), segments.drop(1), symbol.isModuleClass)
+    scala3ToScala2(Reflections.mirror.staticPackage(segments.head), segments.drop(1), symbol.isModuleClass).get
   }
 
-  @tailrec
-  def scala3ToScala2(symbol: universe.Symbol, segments: Array[String], isModule : Boolean): universe.Symbol = symbol match {
-    case classSymbol: universe.ClassSymbol if segments.isEmpty => {
-      if (isModule) {
-        if (classSymbol.isModuleClass) {
-          classSymbol
-        } else {
-          classSymbol.companion
-        }
-      } else {
-        classSymbol
-      }
-    }
-    case typeSymbol: universe.TypeSymbol if segments.isEmpty => typeSymbol
-    case packageSymbol: universe.ModuleSymbol if segments.isEmpty => packageSymbol.moduleClass
+  def scala3ToScala2(symbol: universe.Symbol, segments: Array[String], isModule : Boolean): Option[universe.Symbol] = symbol match {
+    case classSymbol: universe.ClassSymbol if segments.isEmpty =>
+      isValidEnd(isModule, classSymbol)
+    case typeSymbol: universe.TypeSymbol if segments.isEmpty =>
+      isValidEnd(isModule, typeSymbol)
+    case moduleSymbol: universe.ModuleSymbol if segments.isEmpty =>
+      isValidEnd(isModule, moduleSymbol)
     case packageSymbol: universe.ModuleSymbol =>
-      val option = packageSymbol.typeSignature.decls.find(decl => decl.name.decoded == segments.head)
+      val option = packageSymbol.typeSignature.decls.filter(decl => decl.name.decoded == segments.head)
       if (option.isEmpty) {
         // Todo : Workaround: This Block is due to the fact, that classloading with scala reflection is buggy
         val value = s"${symbol.fullName}.${segments.head}"
-        var firstModuleSymbol : universe.Symbol = null
+        val firstModuleSymbol = ArrayBuffer[universe.Symbol]()
         try {
-          firstModuleSymbol = Reflections.mirror.staticPackage(PathResolver.convert(value))
+          firstModuleSymbol.addOne(Reflections.mirror.staticPackage(PathResolver.convert(value)))
         }
         catch
-          case _ => {
-            if (isModule) {
-              firstModuleSymbol = Reflections.mirror.staticModule(PathResolver.convert(value))
-            } else {
-              firstModuleSymbol = Reflections.mirror.staticClass(PathResolver.convert(value))
-            }
-          }
-        PathResolver.scala3ToScala2(firstModuleSymbol, segments.drop(1), isModule)
+          case _ =>
+            firstModuleSymbol.addOne(Reflections.mirror.staticModule(PathResolver.convert(value)))
+            firstModuleSymbol.addOne(Reflections.mirror.staticClass(PathResolver.convert(value)))
+        firstModuleSymbol
+          .map(decl => PathResolver.scala3ToScala2(decl, segments.drop(1), isModule))
+          .find(_.isInstanceOf[Some[universe.Symbol]])
+          .flatten
       } else {
-        PathResolver.scala3ToScala2(option.get, segments.drop(1), isModule)
+        option
+          .map(decl => PathResolver.scala3ToScala2(decl, segments.drop(1), isModule))
+          .find(_.isInstanceOf[Some[universe.Symbol]])
+          .flatten
       }
     case classSymbol: universe.ClassSymbol =>
       val option = classSymbol.typeSignature.decls.find(decl => decl.name.toString == segments.head)
@@ -120,6 +119,22 @@ object PathResolver {
       }
     case methodSymbol: universe.MethodSymbol =>
       PathResolver.scala3ToScala2(methodSymbol.returnType.typeSymbol, segments, isModule)
+  }
+
+  private def isValidEnd(isModule: Boolean, classSymbol: universe.Symbol) = {
+    if (isModule) {
+      if (classSymbol.isModuleClass || classSymbol.isModule) {
+        Some(classSymbol)
+      } else {
+        None
+      }
+    } else {
+      if (classSymbol.isModuleClass || classSymbol.isModule) {
+        None
+      } else {
+        Some(classSymbol)
+      }
+    }
   }
 
   def scala3ToJava(symbol: ClassSymbol): Class[_] = {

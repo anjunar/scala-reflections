@@ -17,7 +17,6 @@ class TypeResolver(classPath: Classpath)(using context: Context) {
           value
             .filter(element => element.fullName.toString() != "module-info")
             .map(element => {
-              println(element.fullName.toString)
               Dispatcher.resolveBegin[ResolvedClass](element, null)
             })
         } else {
