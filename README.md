@@ -95,3 +95,8 @@ println(value) // => Max
 
 
 ...for more examples look a the tests...
+
+```
+--add-exports java.base/jdk.internal.vm.annotation=ALL-UNNAMED
+--add-exports java.base/jdk.internal.util.random=ALL-UNNAMED
+```
