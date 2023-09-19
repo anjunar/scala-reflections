@@ -99,7 +99,7 @@ object PathResolver {
     case moduleSymbol: universe.ModuleSymbol if segments.isEmpty =>
       isValidEnd(isModule, moduleSymbol)
     case moduleSymbol: universe.ModuleSymbol =>
-      val option = moduleSymbol.typeSignature.decls.filter(decl => decl.name.decoded == segments.head)
+      val option = moduleSymbol.info.members.filter(decl => decl.name.decoded == segments.head)
       if (option.isEmpty) {
         // Todo : Workaround: This Block is due to the fact, that classloading with scala reflection is buggy
         val value = s"${symbol.fullName}.${segments.head}"
@@ -128,7 +128,7 @@ object PathResolver {
           .flatten
       }
     case classSymbol: universe.ClassSymbol =>
-      classSymbol.typeSignature.decls.filter(decl => decl.name.toString == segments.head)
+      classSymbol.info.members.filter(decl => decl.name.toString == segments.head)
         .map(decl => PathResolver.scala3ToScala2(decl, segments.drop(1), isModule))
         .find(_.isInstanceOf[Some[universe.Symbol]])
         .flatten
