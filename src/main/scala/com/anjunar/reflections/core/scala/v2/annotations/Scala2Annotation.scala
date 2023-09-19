@@ -20,7 +20,7 @@ class Scala2Annotation(underlying: Annotation, owner: ResolvedNode)(using contex
 
   override val declaredType: ResolvedType = Scala2TypeResolver.resolve[ResolvedType](underlying.tree.tpe, this)
 
-  override val fields: Map[String, Object] = {
+  override lazy val fields: Map[String, Object] = {
     val tree = underlying.tree
 
     def recursion(tree : Tree) : List[Tuple2[String, Object]] = {

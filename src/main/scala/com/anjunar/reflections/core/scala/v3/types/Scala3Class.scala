@@ -73,7 +73,7 @@ class Scala3Class(underlying: ClassSymbol, owner: ResolvedNode)(using context: C
 
   override lazy val declaredMembers : Array[ResolvedMember] = underlying
     .declarations
-    .filter(member => member.isType || (member.isTerm && member.asTerm.kind != TermSymbolKind.Module))
+    .filter(member => ! member.isClass && (member.isType || (member.isTerm && member.asTerm.kind != TermSymbolKind.Module)))
     .map(declaration => Scala3MemberResolver.resolve[ResolvedMember](declaration, this))
     .toArray
     .sorted((lhs, rhs) => lhs.sourcePosition.compareTo(rhs.sourcePosition))

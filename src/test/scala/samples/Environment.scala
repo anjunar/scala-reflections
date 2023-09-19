@@ -4,12 +4,19 @@ import com.anjunar.reflections.beans.Introspector
 import com.anjunar.reflections.core.Utils
 import com.anjunar.reflections.{Reflections, TypeResolver}
 import com.google.common.reflect.ClassPath
+import samples.languages.java.models.Person
 
 import java.util.stream.Collectors
+import scala.collection.immutable.HashSet
 
 object Environment {
 
-  val packages: List[String] = List("com.anjunar", "scala", "samples", "tastyquery")
+  val packages: List[String] = List(
+    "scala", 
+    "samples.languages.java.models", 
+    "samples.languages.scala.v2.models", 
+    "samples.languages.scala.v3.models"
+  )
 
   val classPath: ClassPath = ClassPath.from(ClassLoader.getSystemClassLoader)
   

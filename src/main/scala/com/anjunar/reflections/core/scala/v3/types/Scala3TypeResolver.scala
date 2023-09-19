@@ -21,7 +21,13 @@ object Scala3TypeResolver {
 
       case matchType: MatchType => resolve[R](matchType.scrutinee, owner)
       case lambdaType : LambdaType => resolve[R](lambdaType.resultType, owner)
-      case typeRef : TypeRef => resolve[R](typeRef.optSymbol.get, owner)
+      case typeRef : TypeRef =>
+        val optSymbol = typeRef.optSymbol
+        if (optSymbol.isEmpty) {
+          resolve[R](typeRef.underlying, owner)
+        } else {
+          resolve[R](optSymbol.get, owner)
+        }
       case thisType : ThisType => resolve[R](thisType.tref, owner)
 
       case typeParamRef: TypeParamRef => new Scala3TypeVariable(typeParamRef.paramName.toString, owner)

@@ -1,6 +1,8 @@
 package com.anjunar.reflections
 
 import com.anjunar.reflections.Reflections
+import com.anjunar.reflections.core.scala.v3.members.Scala3AbstractType
+import com.anjunar.reflections.core.scala.v3.types.Scala3TypeVariableWithBounds
 import tastyquery.Symbols.{ClassSymbol, TypeMemberSymbol, TypeSymbol}
 import tastyquery.Types.{AppliedType, LambdaType, TypeMappable, TypeRef}
 import tastyquery.{Contexts, Symbols}
@@ -11,7 +13,13 @@ import scala.reflect.runtime.universe
 
 object PathResolver {
   def scala2ToScala3(symbol: universe.Symbol)(using context: Contexts.Context): Symbols.Symbol = {
-    val fullName = symbol.owner.fullName + "." + symbol.name.decoded
+    val fullName = {
+      if (symbol.fullName == "java.lang.invoke.MethodHandles.Lookup") {
+        "java.lang.invoke.MethodHandles$Lookup"
+      } else {
+        symbol.owner.fullName + "." + symbol.name.decoded
+      }
+    }
     val segments = fullName.split("\\.")
     val packageSymbol = context.findPackage(segments.head)
     val option = scala2ToScala3(packageSymbol, segments.drop(1), symbol.isModuleClass || symbol.isModule)
@@ -24,7 +32,7 @@ object PathResolver {
     case packageSymbol: Symbols.PackageSymbol =>
       packageSymbol
         .declarations
-        .filter(decl => decl.name.decode.toString == segments.head && (decl.isClass || decl.isPackage))
+        .filter(decl => decl.name.decode.toString == segments.head)
         .map(decl => PathResolver.scala2ToScala3(decl, segments.drop(1), isModule))
         .find(_.isInstanceOf[Some[Symbols.Symbol]])
         .flatten
@@ -54,6 +62,8 @@ object PathResolver {
     // Todo : Workaround, is Nothing referenced right?
     case typeMemberSymbol: TypeMemberSymbol if typeMemberSymbol.fullName.toString() == "scala.Nothing" =>
       Some(context.findStaticClass("scala.runtime.Nothing$"))
+    case typeMemberSymbol: TypeMemberSymbol =>
+      Some(typeMemberSymbol)
   }
 
   private def isValidEnd(isModule: Boolean, classSymbol: ClassSymbol) = {
@@ -88,8 +98,8 @@ object PathResolver {
       isValidEnd(isModule, typeSymbol)
     case moduleSymbol: universe.ModuleSymbol if segments.isEmpty =>
       isValidEnd(isModule, moduleSymbol)
-    case packageSymbol: universe.ModuleSymbol =>
-      val option = packageSymbol.typeSignature.decls.filter(decl => decl.name.decoded == segments.head)
+    case moduleSymbol: universe.ModuleSymbol =>
+      val option = moduleSymbol.typeSignature.decls.filter(decl => decl.name.decoded == segments.head)
       if (option.isEmpty) {
         // Todo : Workaround: This Block is due to the fact, that classloading with scala reflection is buggy
         val value = s"${symbol.fullName}.${segments.head}"
@@ -118,17 +128,10 @@ object PathResolver {
           .flatten
       }
     case classSymbol: universe.ClassSymbol =>
-      val option = classSymbol.typeSignature.decls.find(decl => decl.name.toString == segments.head)
-      if (option.isEmpty) {
-        val option = classSymbol.companion.typeSignature.decls.find(decl => decl.name.toString == segments.head)
-        if (option.isEmpty) {
-          throw new IllegalStateException("Not found")
-        } else {
-          PathResolver.scala3ToScala2(option.get, segments.drop(1), isModule)
-        }
-      } else {
-        PathResolver.scala3ToScala2(option.get, segments.drop(1), isModule)
-      }
+      classSymbol.typeSignature.decls.filter(decl => decl.name.toString == segments.head)
+        .map(decl => PathResolver.scala3ToScala2(decl, segments.drop(1), isModule))
+        .find(_.isInstanceOf[Some[universe.Symbol]])
+        .flatten
     case methodSymbol: universe.MethodSymbol =>
       PathResolver.scala3ToScala2(methodSymbol.returnType.typeSymbol, segments, isModule)
   }

@@ -12,6 +12,7 @@ trait ResolvedAnnotation extends ResolvedNode {
 
   val declaredType: ResolvedType
 
-  val fields : Map[String, Object]
+  lazy val fields : Map[String, Object]
+  
   override def toString = s"@$name(${fields.mkString(", ")}) "
 }

@@ -15,7 +15,7 @@ object JavaTypeResolver {
   def resolve[R <: ResolvedNode](category : Type, owner : ResolvedNode)(using context: Contexts.Context) : R = {
     val result = category match {
       case javaClass : Class[_] if javaClass.isPrimitive => new JavaPrimitiveType(javaClass, owner)
-      case javaClass : Class[_] if javaClass.isArray => new JavaClass(javaClass.componentType(), owner)
+      case javaClass : Class[_] if javaClass.isArray => new JavaClass(javaClass, owner)
       case javaClass : Class[_] => {
         if (javaClass.getName.contains("$")) {
           new JavaClass(javaClass, owner)

@@ -22,7 +22,7 @@ class Scala3Annotation (underlying : Annotation, owner : ResolvedNode)(using con
   
   override val declaredType: ResolvedClass = Scala3TypeResolver.resolve[ResolvedClass](underlying.symbol, this)
 
-  override val fields: Map[String, Object] = underlying
+  override lazy val fields: Map[String, Object] = underlying
     .arguments
     .map(Utils.doIndexed((index, arg) => {
       val lhs: String = declaredType match

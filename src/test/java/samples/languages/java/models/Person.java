@@ -3,7 +3,6 @@ package samples.languages.java.models;
 import jakarta.validation.constraints.Size;
 
 public class Person extends Identity {
-
     @Size(min = 3, max = 80)
     private String firstName;
     

@@ -10,6 +10,7 @@ import com.anjunar.reflections.core.java.types.JavaTypeResolver
 import tastyquery.Contexts
 
 import java.lang.annotation.Annotation
+import java.lang.reflect
 import java.lang.reflect.Modifier
 
 class JavaAnnotation(underlying: Annotation, owner: ResolvedNode)(using context: Contexts.Context) extends JavaNode(underlying, owner) with ResolvedAnnotation {
@@ -21,11 +22,10 @@ class JavaAnnotation(underlying: Annotation, owner: ResolvedNode)(using context:
   
   override val declaredType: ResolvedType = JavaTypeResolver.resolve[ResolvedType](underlying.annotationType(), this)
 
-
-  override val fields: Map[String, Object] = underlying
-    .annotationType()
-    .getDeclaredMethods
-    .filter(method => Modifier.isPublic(method.getModifiers) && method.getParameterCount == 0)
+  override lazy val fields: Map[String, Object] = underlying
+    .getClass
+    .getMethods
+    .filter(method => method.getParameterCount == 0 && underlying.annotationType().getDeclaredMethods.exists(_.getName == method.getName))
     .map(method => Tuple2(method.getName, method.invoke(underlying)))
     .toMap
 

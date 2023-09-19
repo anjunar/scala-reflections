@@ -65,7 +65,14 @@ class JavaClass(override val underlying : Class[_], owner : ResolvedNode)(using 
 
   lazy val declaredFields: Array[ResolvedField] = underlyingAlternative
     .getDeclaredFields
-    .map(field => JavaMemberResolver.resolve[ResolvedField](underlying.getDeclaredField(field.getName), this))
+    .map(field => try
+      JavaMemberResolver.resolve[ResolvedField](underlying.getDeclaredField(field.getName), this)
+    catch
+      case _ => {
+        print("")
+        null
+      }
+    )
 
   lazy val declaredAbstractTypes : Array[ResolvedAbstractType] = Array()
 
@@ -78,13 +85,13 @@ class JavaClass(override val underlying : Class[_], owner : ResolvedNode)(using 
 
   lazy val declaredMethods: Array[ResolvedMethod] = underlyingAlternative
     .getDeclaredMethods
-    .filter(method => ! method.getName.startsWith("lambda$"))
+    .filter(method => ! method.getName.startsWith("lambda$") && method.getLongName != "sun.misc.Unsafe.getUnsafe()")
     .map(method => {
       val parameters = method.getParameterTypes.map(param => toJavaClass(param))
       JavaMemberResolver.resolve[ResolvedMethod](underlying.getDeclaredMethod(method.getName, parameters: _*), this)
     })
 
-  private def toJavaClass(param: CtClass) = param.getName match {
+  private def toJavaClass(param: CtClass) : Class[_] = param.getName match {
     case "short" => classOf[Short]
     case "long" => classOf[Long]
     case "int" => classOf[Int]
@@ -94,21 +101,32 @@ class JavaClass(override val underlying : Class[_], owner : ResolvedNode)(using 
     case "byte" => classOf[Byte]
     case "boolean" => classOf[Boolean]
 
-    case "short[]" => classOf[Array[Short]]
-    case "long[]" => classOf[Array[Long]]
-    case "int[]" => classOf[Array[Int]]
-    case "char[]" => classOf[Array[Char]]
-    case "float[]" => classOf[Array[Float]]
-    case "double[]" => classOf[Array[Double]]
-    case "byte[]" => classOf[Array[Byte]]
-    case "boolean[]" => classOf[Array[Boolean]]
-
     case _ =>
       if (param.isArray) {
-        Class.forName("[L" + param.getName + ";")
+        val name = array(param)
+        Class.forName(name, false, ClassLoader.getSystemClassLoader)
       } else {
-        Class.forName(param.getName)
+        Class.forName(param.getName, false, ClassLoader.getSystemClassLoader)
       }
+  }
+
+  private def array(componentType: CtClass) : String = {
+    if (componentType.isPrimitive) {
+      val primitive = componentType.getName match
+        case "short" => "S"
+        case "long" => "J"
+        case "int" => "I"
+        case "char" => "C"
+        case "float" => "F"
+        case "double" => "D"
+        case "byte" => "B"
+        case "boolean" => "Z"
+      primitive
+    } else if (componentType.isArray) {
+      "[" + array(componentType.getComponentType)
+    } else {
+      "L" + componentType.getName + ";"
+    }
   }
 
   override lazy val declaredAnnotations: Array[ResolvedAnnotation] = underlying
