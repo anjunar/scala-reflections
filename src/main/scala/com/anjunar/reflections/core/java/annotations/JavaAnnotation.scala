@@ -23,9 +23,9 @@ class JavaAnnotation(underlying: Annotation, owner: ResolvedNode)(using context:
   override val declaredType: ResolvedType = JavaTypeResolver.resolve[ResolvedType](underlying.annotationType(), this)
 
   override lazy val fields: Map[String, Object] = underlying
-    .getClass
+    .annotationType()
     .getMethods
-    .filter(method => method.getParameterCount == 0 && underlying.annotationType().getDeclaredMethods.exists(_.getName == method.getName))
+    .filter(method => method.getParameterCount == 0)
     .map(method => Tuple2(method.getName, method.invoke(underlying)))
     .toMap
 
