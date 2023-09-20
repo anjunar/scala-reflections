@@ -12,7 +12,7 @@ import scala.collection.immutable.HashSet
 object Environment {
 
   val packages: List[String] = List(
-    "scala", 
+//    "scala",
     "samples.languages.java.models", 
     "samples.languages.scala.v2.models", 
     "samples.languages.scala.v3.models"

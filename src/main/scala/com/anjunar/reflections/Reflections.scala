@@ -17,67 +17,60 @@ object Reflections {
 
   val mirror: universe.Mirror = runtimeMirror(ClassLoader.getSystemClassLoader)
 
-  private val typesCache = new mutable.HashSet[Type]()
-
+  private val symbolCache = new mutable.HashSet[universe.Symbol]()
   private val classCache = new mutable.HashSet[Class[_]]()
+  private val blackList = List("scala.runtime.AnnotationDefault", "scala.Any")
 
-  private def traverse(types: Type): Unit = types match
-    case clazz: Class[_] if !clazz.isArray && !clazz.isPrimitive =>
-      if (!classCache.contains(clazz)) {
+  private def traverse(symbol : universe.Symbol) : Unit = symbol match {
+    case classSymbol: universe.ClassSymbol =>
+      if (!symbolCache.contains(symbol)) {
+        symbolCache.add(symbol)
+        if (! blackList.contains(classSymbol.fullName) && ! classSymbol.fullName.contains(">")) {
+          val clazz = Class.forName(classSymbol.fullName)
+          classCache.add(clazz)
+        }
+        if (classSymbol.companion.isModule) {
+          traverse(classSymbol.companion)
+        }
+        classSymbol.annotations.foreach(annotation => traverse(annotation.tree.tpe.typeSymbol))
+        classSymbol.info.members.foreach(member => traverse(member))
+        classSymbol.info.typeParams.foreach(param => traverse(param))
+        classSymbol.info.resultType match
+          case classInfoType: universe.ClassInfoType => classInfoType.parents.foreach(parent => traverse(parent.typeSymbol))
+      }
+    case moduleSymbol: universe.ModuleSymbol =>
+      if (!symbolCache.contains(symbol)) {
+        symbolCache.add(symbol)
+        val clazz = Class.forName(moduleSymbol.fullName)
         classCache.add(clazz)
-        clazz.getAnnotations.foreach(annotation => traverse(annotation.annotationType()))
-
-        clazz.getDeclaredFields.foreach(field => {
-          field.getAnnotations.foreach(annotation => traverse(annotation.annotationType()))
-          traverse(field.getGenericType)
-        })
-        clazz.getDeclaredConstructors.foreach(constructor => {
-          constructor.getAnnotations.foreach(annotation => traverse(annotation.annotationType()))
-          constructor.getGenericParameterTypes.foreach(param => traverse(param))
-          constructor.getParameterAnnotations.foreach(list => list.foreach(param => traverse(param.annotationType())))
-          constructor.getTypeParameters.foreach(param => traverse(param))
-        })
-        clazz.getDeclaredMethods.foreach(method => {
-          method.getAnnotations.foreach(annotation => traverse(annotation.annotationType()))
-          method.getGenericParameterTypes.foreach(param => traverse(param))
-          method.getTypeParameters.foreach(param => traverse(param))
-          method.getParameterAnnotations.foreach(list => list.foreach(param => traverse(param.annotationType())))
-          traverse(method.getGenericReturnType)
-        })
-        clazz.getGenericInterfaces.foreach(interface => traverse(interface))
-        clazz.getDeclaredClasses.foreach(clazz => {
-          traverse(clazz)
-        })
-        traverse(clazz.getGenericSuperclass)
+        moduleSymbol.annotations.foreach(annotation => traverse(annotation.tree.tpe.typeSymbol))
+        moduleSymbol.info.members.foreach(member => traverse(member))
+        moduleSymbol.info.typeParams.foreach(param => traverse(param))
+        moduleSymbol.info.resultType match
+          case classInfoType: universe.ClassInfoType => classInfoType.parents.foreach(parent => traverse(parent.typeSymbol))
+          case _ => {}
       }
-    case clazz: Class[_] => {} // Todo : Array or Primitive here
-    case parameterized: ParameterizedType =>
-      if (!typesCache.contains(parameterized)) {
-        typesCache.add(parameterized)
-        traverse(parameterized.getRawType)
-        parameterized.getActualTypeArguments.foreach(arg => traverse(arg))
+    case methodSymbol: universe.MethodSymbol =>
+      if (!symbolCache.contains(symbol)) {
+        symbolCache.add(symbol)
+        methodSymbol.annotations.foreach(annotation => traverse(annotation.tree.tpe.typeSymbol))
+        methodSymbol.info.typeParams.foreach(param => traverse(param))
+        methodSymbol.info.paramLists.foreach(list => list.foreach(param => traverse(param)))
+        traverse(methodSymbol.returnType.typeSymbol)
       }
-    case genericArrayType: GenericArrayType =>
-      if (!typesCache.contains(genericArrayType)) {
-        typesCache.add(genericArrayType)
-        traverse(genericArrayType.getGenericComponentType)
+    case termSymbol: universe.TermSymbol =>
+      if (!symbolCache.contains(symbol)) {
+        symbolCache.add(symbol)
+        termSymbol.annotations.foreach(annotation => traverse(annotation.tree.tpe.typeSymbol))
+        traverse(termSymbol.info.typeSymbol)
       }
-    case typeVariable: TypeVariable[_] =>
-      if (!typesCache.contains(typeVariable)) {
-        typesCache.add(typeVariable)
-        typeVariable.getAnnotations.foreach(annotation => traverse(annotation.annotationType()))
-        try
-          typeVariable.getBounds.foreach(bound => traverse(bound))
-        catch
-          case _ => {} // Todo : Workaround, jvm cannot find class scala.AnyKind
+    case abstractTypeSymbol: universe.TypeSymbol =>
+      if (!symbolCache.contains(symbol)) {
+        symbolCache.add(symbol)
+        abstractTypeSymbol.annotations.foreach(annotation => traverse(annotation.tree.tpe.typeSymbol))
+        abstractTypeSymbol.typeParams.foreach(param => traverse(param))
       }
-    case wildCardType: WildcardType =>
-      if (!typesCache.contains(wildCardType)) {
-        typesCache.add(wildCardType)
-        wildCardType.getUpperBounds.foreach(bound => traverse(bound))
-        wildCardType.getLowerBounds.foreach(bound => traverse(bound))
-      }
-    case null => {}
+  }
 
   private def inputStreamToByteArray(inputStream: InputStream): IArray[Byte] = {
     val byteArrayOutputStream = new ByteArrayOutputStream
@@ -94,7 +87,7 @@ object Reflections {
   
   def init(classes: Iterable[Class[_]]): TypeResolver = {
 
-    classes.foreach(traverse(_))
+    classes.foreach(clazz => traverse(mirror.staticClass(clazz.getName)))
 
     val value = classCache.groupBy(_.getPackage.getName)
 
